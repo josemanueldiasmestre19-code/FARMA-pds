@@ -1,10 +1,15 @@
 import { MapPin, CheckCircle2, XCircle, ShoppingBag } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { motion } from 'framer-motion'
 
-export default function MedicineCard({ medicine, pharmacy, distance, stock }) {
+export default function MedicineCard({ medicine, pharmacy, distance, stock, onReserve }) {
   const available = stock?.available
   return (
-    <div className="group bg-white rounded-2xl p-5 border border-slate-200 hover:border-brand-400 hover:shadow-xl hover:shadow-brand-500/10 transition-all animate-fade-in">
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ y: -2 }}
+      className="group bg-white rounded-2xl p-5 border border-slate-200 hover:border-brand-400 hover:shadow-xl hover:shadow-brand-500/10 transition-all">
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
@@ -33,12 +38,13 @@ export default function MedicineCard({ medicine, pharmacy, distance, stock }) {
           <div className="text-lg font-extrabold text-slate-900">{medicine.price} MT</div>
           <button
             disabled={!available}
-            className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand-600 text-white text-xs font-semibold hover:bg-brand-700 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed transition"
+            onClick={() => onReserve?.(medicine, pharmacy)}
+            className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand-600 text-white text-xs font-semibold hover:bg-brand-700 hover:scale-105 active:scale-95 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed disabled:hover:scale-100 transition"
           >
             <ShoppingBag className="w-3.5 h-3.5" /> Reservar
           </button>
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }

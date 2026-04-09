@@ -1,10 +1,13 @@
+import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { pharmacies, medicines } from '../data/mockData.js'
 import { MapPin, Phone, Clock, Star, ArrowLeft, CheckCircle2, XCircle, ShoppingBag } from 'lucide-react'
+import ReserveModal from '../components/ReserveModal.jsx'
 
 export default function PharmacyDetail() {
   const { id } = useParams()
   const pharmacy = pharmacies.find((p) => p.id === Number(id))
+  const [reserveMed, setReserveMed] = useState(null)
 
   if (!pharmacy) {
     return (
@@ -74,7 +77,8 @@ export default function PharmacyDetail() {
                 </div>
                 <button
                   disabled={!stock?.available}
-                  className="px-4 py-2 rounded-lg bg-brand-600 text-white text-xs font-semibold hover:bg-brand-700 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed flex items-center gap-1.5"
+                  onClick={() => setReserveMed(m)}
+                  className="px-4 py-2 rounded-lg bg-brand-600 text-white text-xs font-semibold hover:bg-brand-700 hover:scale-105 active:scale-95 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center gap-1.5 transition"
                 >
                   <ShoppingBag className="w-3.5 h-3.5" /> Reservar
                 </button>
@@ -83,6 +87,13 @@ export default function PharmacyDetail() {
           })}
         </div>
       </div>
+
+      <ReserveModal
+        open={!!reserveMed}
+        onClose={() => setReserveMed(null)}
+        medicine={reserveMed}
+        pharmacy={pharmacy}
+      />
     </div>
   )
 }

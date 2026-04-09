@@ -1,16 +1,25 @@
 import { useState, useMemo, useEffect } from 'react'
-import { useSearchParams } from 'react-router-dom'
-import { Search as SearchIcon, Filter, SlidersHorizontal } from 'lucide-react'
+import { useSearchParams, Link } from 'react-router-dom'
+import { Search as SearchIcon, Filter, SlidersHorizontal, PackageSearch } from 'lucide-react'
 import MedicineCard from '../components/MedicineCard.jsx'
+import ReserveModal from '../components/ReserveModal.jsx'
+import EmptyState from '../components/ui/EmptyState.jsx'
+import { MedicineCardSkeleton } from '../components/ui/Skeleton.jsx'
+import Button from '../components/ui/Button.jsx'
 import { medicines, pharmacies, distanceKm, userLocation } from '../data/mockData.js'
 
 export default function Search() {
   const [params, setParams] = useSearchParams()
   const [query, setQuery] = useState(params.get('q') || '')
   const [onlyAvailable, setOnlyAvailable] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [reserveTarget, setReserveTarget] = useState(null)
 
   useEffect(() => {
     setParams(query ? { q: query } : {})
+    setLoading(true)
+    const t = setTimeout(() => setLoading(false), 450)
+    return () => clearTimeout(t)
   }, [query, setParams])
 
   const results = useMemo(() => {
@@ -43,7 +52,7 @@ export default function Search() {
       </div>
 
       <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-3 flex flex-col sm:flex-row gap-3 mb-6">
-        <div className="flex-1 flex items-center bg-slate-50 rounded-xl px-4">
+        <div className="flex-1 flex items-center bg-slate-50 rounded-xl px-4 focus-within:ring-2 focus-within:ring-brand-300 transition">
           <SearchIcon className="w-5 h-5 text-slate-400" />
           <input
             value={query}
@@ -54,8 +63,8 @@ export default function Search() {
         </div>
         <button
           onClick={() => setOnlyAvailable(!onlyAvailable)}
-          className={`px-5 py-3 rounded-xl font-semibold text-sm flex items-center gap-2 transition ${
-            onlyAvailable ? 'bg-brand-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+          className={`px-5 py-3 rounded-xl font-semibold text-sm flex items-center gap-2 transition active:scale-95 ${
+            onlyAvailable ? 'bg-brand-600 text-white shadow-md shadow-brand-500/30' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
           }`}
         >
           <Filter className="w-4 h-4" /> Só disponíveis
@@ -64,24 +73,48 @@ export default function Search() {
 
       <div className="flex items-center justify-between mb-4">
         <div className="text-sm text-slate-600">
-          <span className="font-bold text-slate-900">{results.length}</span> resultados encontrados
+          {loading ? 'A pesquisar...' : (
+            <><span className="font-bold text-slate-900">{results.length}</span> resultados encontrados</>
+          )}
         </div>
         <div className="text-sm text-slate-500 flex items-center gap-1">
           <SlidersHorizontal className="w-4 h-4" /> Ordenado por distância
         </div>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-4">
-        {results.map((r, i) => (
-          <MedicineCard key={`${r.medicine.id}-${r.pharmacy.id}`} {...r} />
-        ))}
-      </div>
-
-      {results.length === 0 && (
-        <div className="bg-white border border-slate-200 rounded-2xl p-12 text-center">
-          <div className="text-slate-400 text-lg">Nenhum resultado encontrado.</div>
+      {loading ? (
+        <div className="grid md:grid-cols-2 gap-4">
+          {Array.from({ length: 6 }).map((_, i) => <MedicineCardSkeleton key={i} />)}
+        </div>
+      ) : results.length === 0 ? (
+        <EmptyState
+          icon={PackageSearch}
+          title="Nenhum medicamento encontrado"
+          description="Tente outro nome ou remova o filtro de disponibilidade."
+          action={
+            <Button variant="secondary" onClick={() => { setQuery(''); setOnlyAvailable(false) }}>
+              Limpar filtros
+            </Button>
+          }
+        />
+      ) : (
+        <div className="grid md:grid-cols-2 gap-4">
+          {results.map((r) => (
+            <MedicineCard
+              key={`${r.medicine.id}-${r.pharmacy.id}`}
+              {...r}
+              onReserve={(med, pharm) => setReserveTarget({ medicine: med, pharmacy: pharm })}
+            />
+          ))}
         </div>
       )}
+
+      <ReserveModal
+        open={!!reserveTarget}
+        onClose={() => setReserveTarget(null)}
+        medicine={reserveTarget?.medicine}
+        pharmacy={reserveTarget?.pharmacy}
+      />
     </div>
   )
 }
