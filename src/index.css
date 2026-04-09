@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root {
+  height: 100%;
+}
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+/* Leaflet fixes */
+.leaflet-container {
+  height: 100%;
+  width: 100%;
+  border-radius: 1rem;
+  font-family: 'Inter', sans-serif;
+}
+.leaflet-popup-content-wrapper {
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+.leaflet-popup-content {
+  margin: 14px 16px;
+}
+
+/* Custom marker */
+.pharmacy-marker {
+  background: #10b981;
+  border: 3px solid white;
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(16,185,129,0.5);
+}
+
+.scrollbar-thin::-webkit-scrollbar { width: 6px; }
+.scrollbar-thin::-webkit-scrollbar-thumb { background: #d1fae5; border-radius: 3px; }
