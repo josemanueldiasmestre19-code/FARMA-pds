@@ -1,41 +1,63 @@
-import { useState } from 'react'
-import { pharmacies as initialPharmacies, medicines } from '../data/mockData.js'
+import { useState, useEffect } from 'react'
 import { Package, TrendingUp, AlertCircle, CheckCircle2, Store } from 'lucide-react'
+import { useData } from '../context/DataContext.jsx'
+import { supabase } from '../lib/supabase.js'
 
 export default function Dashboard() {
-  const [selectedId, setSelectedId] = useState(initialPharmacies[0].id)
-  // Clone do stock para permitir actualizar localmente (mock)
-  const [stocks, setStocks] = useState(() =>
-    Object.fromEntries(initialPharmacies.map((p) => [p.id, { ...p.stock }]))
-  )
+  const { pharmacies, medicines, loading: dataLoading } = useData()
+  const [selectedId, setSelectedId] = useState(null)
+  const [stocks, setStocks] = useState({})
 
-  const pharmacy = initialPharmacies.find((p) => p.id === selectedId)
-  const currentStock = stocks[selectedId]
+  // Inicializar quando os dados carregam
+  useEffect(() => {
+    if (pharmacies.length > 0 && !selectedId) {
+      setSelectedId(pharmacies[0].id)
+      setStocks(Object.fromEntries(pharmacies.map((p) => [p.id, { ...p.stock }])))
+    }
+  }, [pharmacies, selectedId])
 
-  const toggleAvailable = (medId) => {
-    setStocks((s) => ({
-      ...s,
-      [selectedId]: {
-        ...s[selectedId],
-        [medId]: {
-          ...s[selectedId][medId],
-          available: !s[selectedId][medId].available,
-        },
-      },
-    }))
+  if (dataLoading || !selectedId) {
+    return (
+      <div className="max-w-7xl mx-auto px-6 py-10">
+        <p className="text-slate-500">A carregar dashboard...</p>
+      </div>
+    )
   }
 
-  const updateQty = (medId, qty) => {
+  const pharmacy = pharmacies.find((p) => p.id === selectedId)
+  const currentStock = stocks[selectedId] || {}
+
+  const toggleAvailable = async (medId) => {
+    const newAvailable = !currentStock[medId].available
     setStocks((s) => ({
       ...s,
       [selectedId]: {
         ...s[selectedId],
-        [medId]: {
-          qty: Number(qty),
-          available: Number(qty) > 0,
-        },
+        [medId]: { ...s[selectedId][medId], available: newAvailable },
       },
     }))
+    await supabase
+      .from('pharmacy_stock')
+      .update({ available: newAvailable })
+      .eq('pharmacy_id', selectedId)
+      .eq('medicine_id', medId)
+  }
+
+  const updateQty = async (medId, qty) => {
+    const numQty = Number(qty)
+    const newAvailable = numQty > 0
+    setStocks((s) => ({
+      ...s,
+      [selectedId]: {
+        ...s[selectedId],
+        [medId]: { qty: numQty, available: newAvailable },
+      },
+    }))
+    await supabase
+      .from('pharmacy_stock')
+      .update({ qty: numQty, available: newAvailable })
+      .eq('pharmacy_id', selectedId)
+      .eq('medicine_id', medId)
   }
 
   const totalAvailable = Object.values(currentStock).filter((x) => x.available).length
@@ -46,7 +68,7 @@ export default function Dashboard() {
     { label: 'Medicamentos disponíveis', value: `${totalAvailable}/${medicines.length}`, icon: CheckCircle2, color: 'emerald' },
     { label: 'Unidades em stock', value: totalUnits, icon: Package, color: 'blue' },
     { label: 'Stock baixo', value: lowStock, icon: AlertCircle, color: 'amber' },
-    { label: 'Rating', value: pharmacy.rating, icon: TrendingUp, color: 'brand' },
+    { label: 'Rating', value: pharmacy?.rating, icon: TrendingUp, color: 'brand' },
   ]
 
   return (
@@ -63,7 +85,7 @@ export default function Dashboard() {
             onChange={(e) => setSelectedId(Number(e.target.value))}
             className="bg-transparent outline-none text-sm font-semibold text-slate-800 pr-2"
           >
-            {initialPharmacies.map((p) => (
+            {pharmacies.map((p) => (
               <option key={p.id} value={p.id}>{p.name}</option>
             ))}
           </select>
@@ -92,6 +114,7 @@ export default function Dashboard() {
         <div className="divide-y divide-slate-100">
           {medicines.map((m) => {
             const s = currentStock[m.id]
+            if (!s) return null
             return (
               <div key={m.id} className="px-6 py-4 flex items-center gap-4 hover:bg-slate-50 transition">
                 <div className="flex-1">
@@ -125,7 +148,7 @@ export default function Dashboard() {
       </div>
 
       <p className="text-xs text-slate-400 mt-4 text-center">
-        * Este é um painel simulado para fins académicos. As alterações são apenas locais.
+        * As alterações de stock são guardadas na base de dados em tempo real.
       </p>
     </div>
   )

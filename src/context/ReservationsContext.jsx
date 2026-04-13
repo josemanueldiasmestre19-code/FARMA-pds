@@ -1,30 +1,61 @@
-import { createContext, useContext } from 'react'
-import useLocalStorage from '../hooks/useLocalStorage.js'
+import { createContext, useContext, useEffect, useState } from 'react'
+import { supabase } from '../lib/supabase.js'
 import { useAuth } from './AuthContext.jsx'
 
 const ReservationsContext = createContext(null)
 
 export function ReservationsProvider({ children }) {
   const { user } = useAuth()
-  const [all, setAll] = useLocalStorage('fa_reservations', [])
+  const [reservations, setReservations] = useState([])
 
-  const reservations = user ? all.filter((r) => r.userId === user.id) : []
-
-  const addReservation = (data) => {
-    if (!user) return { ok: false, error: 'Precisa de iniciar sessão.' }
-    const reservation = {
-      id: Date.now(),
-      userId: user.id,
-      createdAt: new Date().toISOString(),
-      status: 'pendente',
-      ...data,
+  // Carregar reservas do utilizador
+  useEffect(() => {
+    if (!user) {
+      setReservations([])
+      return
     }
-    setAll([reservation, ...all])
-    return { ok: true, reservation }
+
+    async function fetchReservations() {
+      const { data } = await supabase
+        .from('reservations')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+      setReservations(data || [])
+    }
+
+    fetchReservations()
+  }, [user])
+
+  const addReservation = async (data) => {
+    if (!user) return { ok: false, error: 'Precisa de iniciar sessão.' }
+
+    const row = {
+      user_id: user.id,
+      medicine_id: data.medicineId,
+      medicine_name: data.medicineName,
+      pharmacy_id: data.pharmacyId,
+      pharmacy_name: data.pharmacyName,
+      pharmacy_address: data.pharmacyAddress,
+      price: data.price,
+      status: 'pendente',
+    }
+
+    const { data: inserted, error } = await supabase
+      .from('reservations')
+      .insert(row)
+      .select()
+      .single()
+
+    if (error) return { ok: false, error: error.message }
+
+    setReservations((prev) => [inserted, ...prev])
+    return { ok: true, reservation: inserted }
   }
 
-  const cancelReservation = (id) => {
-    setAll(all.filter((r) => r.id !== id))
+  const cancelReservation = async (id) => {
+    await supabase.from('reservations').delete().eq('id', id)
+    setReservations((prev) => prev.filter((r) => r.id !== id))
   }
 
   return (

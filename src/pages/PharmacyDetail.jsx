@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { pharmacies, medicines } from '../data/mockData.js'
 import { MapPin, Phone, Clock, Star, ArrowLeft, CheckCircle2, XCircle, ShoppingBag } from 'lucide-react'
 import ReserveModal from '../components/ReserveModal.jsx'
+import { useData } from '../context/DataContext.jsx'
 
 export default function PharmacyDetail() {
   const { id } = useParams()
+  const { pharmacies, medicines } = useData()
   const pharmacy = pharmacies.find((p) => p.id === Number(id))
   const [reserveMed, setReserveMed] = useState(null)
 

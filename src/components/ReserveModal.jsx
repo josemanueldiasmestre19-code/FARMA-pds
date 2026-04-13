@@ -18,8 +18,7 @@ export default function ReserveModal({ open, onClose, medicine, pharmacy }) {
 
   const handleConfirm = async () => {
     setLoading(true)
-    await new Promise((r) => setTimeout(r, 700))
-    const res = addReservation({
+    const res = await addReservation({
       medicineId: medicine.id,
       medicineName: medicine.name,
       price: medicine.price,

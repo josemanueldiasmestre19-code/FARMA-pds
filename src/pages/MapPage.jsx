@@ -1,9 +1,11 @@
 import PharmacyMap from '../components/PharmacyMap.jsx'
-import { pharmacies, medicines } from '../data/mockData.js'
 import { Link } from 'react-router-dom'
 import { MapPin, Star, Clock } from 'lucide-react'
+import { useData } from '../context/DataContext.jsx'
 
 export default function MapPage() {
+  const { pharmacies, medicines } = useData()
+
   return (
     <div className="max-w-7xl mx-auto px-6 py-10">
       <div className="mb-6">

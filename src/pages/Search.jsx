@@ -1,14 +1,16 @@
 import { useState, useMemo, useEffect } from 'react'
-import { useSearchParams, Link } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import { Search as SearchIcon, Filter, SlidersHorizontal, PackageSearch } from 'lucide-react'
 import MedicineCard from '../components/MedicineCard.jsx'
 import ReserveModal from '../components/ReserveModal.jsx'
 import EmptyState from '../components/ui/EmptyState.jsx'
 import { MedicineCardSkeleton } from '../components/ui/Skeleton.jsx'
 import Button from '../components/ui/Button.jsx'
-import { medicines, pharmacies, distanceKm, userLocation } from '../data/mockData.js'
+import { distanceKm, userLocation } from '../data/mockData.js'
+import { useData } from '../context/DataContext.jsx'
 
 export default function Search() {
+  const { medicines, pharmacies, loading: dataLoading } = useData()
   const [params, setParams] = useSearchParams()
   const [query, setQuery] = useState(params.get('q') || '')
   const [onlyAvailable, setOnlyAvailable] = useState(false)
@@ -23,6 +25,7 @@ export default function Search() {
   }, [query, setParams])
 
   const results = useMemo(() => {
+    if (dataLoading) return []
     const q = query.trim().toLowerCase()
     const list = []
     medicines.forEach((m) => {
@@ -42,7 +45,9 @@ export default function Search() {
       if (a.stock?.available !== b.stock?.available) return a.stock?.available ? -1 : 1
       return a.distance - b.distance
     })
-  }, [query, onlyAvailable])
+  }, [query, onlyAvailable, medicines, pharmacies, dataLoading])
+
+  const isLoading = loading || dataLoading
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-10">
@@ -73,7 +78,7 @@ export default function Search() {
 
       <div className="flex items-center justify-between mb-4">
         <div className="text-sm text-slate-600">
-          {loading ? 'A pesquisar...' : (
+          {isLoading ? 'A pesquisar...' : (
             <><span className="font-bold text-slate-900">{results.length}</span> resultados encontrados</>
           )}
         </div>
@@ -82,7 +87,7 @@ export default function Search() {
         </div>
       </div>
 
-      {loading ? (
+      {isLoading ? (
         <div className="grid md:grid-cols-2 gap-4">
           {Array.from({ length: 6 }).map((_, i) => <MedicineCardSkeleton key={i} />)}
         </div>

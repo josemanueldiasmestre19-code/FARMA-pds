@@ -15,8 +15,7 @@ export default function Register() {
   const submit = async (e) => {
     e.preventDefault()
     setLoading(true)
-    await new Promise((r) => setTimeout(r, 600))
-    const res = register(form)
+    const res = await register(form)
     setLoading(false)
     if (res.ok) {
       toast.success(`Bem-vindo, ${form.name}!`)

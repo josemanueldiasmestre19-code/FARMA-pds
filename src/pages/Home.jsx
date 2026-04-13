@@ -1,11 +1,12 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { Search, MapPin, Shield, Clock, TrendingUp, Pill, ArrowRight, CheckCircle2 } from 'lucide-react'
 import { useState } from 'react'
-import { pharmacies, medicines } from '../data/mockData.js'
+import { useData } from '../context/DataContext.jsx'
 
 export default function Home() {
   const [query, setQuery] = useState('')
   const navigate = useNavigate()
+  const { pharmacies, medicines } = useData()
 
   const handleSearch = (e) => {
     e.preventDefault()

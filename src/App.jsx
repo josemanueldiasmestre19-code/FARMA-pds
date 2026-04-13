@@ -13,6 +13,7 @@ import Register from './pages/Register.jsx'
 import MyReservations from './pages/MyReservations.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
 import { ReservationsProvider } from './context/ReservationsContext.jsx'
+import { DataProvider } from './context/DataContext.jsx'
 
 // Wrapper para animar transições entre páginas
 function PageWrapper({ children }) {
@@ -49,8 +50,9 @@ function AnimatedRoutes() {
 export default function App() {
   return (
     <AuthProvider>
-      <ReservationsProvider>
-        <div className="min-h-screen flex flex-col bg-slate-50">
+      <DataProvider>
+        <ReservationsProvider>
+          <div className="min-h-screen flex flex-col bg-slate-50">
           <Navbar />
           <main className="flex-1">
             <AnimatedRoutes />
@@ -70,7 +72,8 @@ export default function App() {
             }}
           />
         </div>
-      </ReservationsProvider>
+        </ReservationsProvider>
+      </DataProvider>
     </AuthProvider>
   )
 }

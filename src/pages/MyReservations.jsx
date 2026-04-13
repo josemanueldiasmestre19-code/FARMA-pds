@@ -70,16 +70,16 @@ export default function MyReservations() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <h3 className="font-bold text-slate-900">{r.medicineName}</h3>
+                    <h3 className="font-bold text-slate-900">{r.medicine_name}</h3>
                     <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 uppercase">
                       {r.status}
                     </span>
                   </div>
                   <div className="text-sm text-slate-600 flex items-center gap-1 mt-1">
-                    <MapPin className="w-3.5 h-3.5" /> {r.pharmacyName}
+                    <MapPin className="w-3.5 h-3.5" /> {r.pharmacy_name}
                   </div>
                   <div className="text-xs text-slate-400 flex items-center gap-1 mt-0.5">
-                    <Calendar className="w-3 h-3" /> {new Date(r.createdAt).toLocaleString('pt-PT')}
+                    <Calendar className="w-3 h-3" /> {new Date(r.created_at).toLocaleString('pt-PT')}
                   </div>
                 </div>
                 <div className="flex items-center gap-3">

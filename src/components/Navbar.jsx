@@ -17,8 +17,10 @@ export default function Navbar() {
     { to: '/dashboard', label: 'Dashboard' },
   ]
 
-  const handleLogout = () => {
-    logout()
+  const userName = user?.user_metadata?.name || user?.email || ''
+
+  const handleLogout = async () => {
+    await logout()
     setMenuOpen(false)
     toast.success('Sessão terminada')
     navigate('/')
@@ -62,9 +64,9 @@ export default function Navbar() {
                 className="flex items-center gap-2 px-3 py-2 rounded-xl bg-brand-50 hover:bg-brand-100 transition"
               >
                 <div className="w-7 h-7 rounded-full bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center text-white text-xs font-bold">
-                  {user.name.charAt(0).toUpperCase()}
+                  {userName.charAt(0).toUpperCase()}
                 </div>
-                <span className="text-sm font-semibold text-slate-800 max-w-[120px] truncate">{user.name}</span>
+                <span className="text-sm font-semibold text-slate-800 max-w-[120px] truncate">{userName}</span>
               </button>
               {menuOpen && (
                 <div

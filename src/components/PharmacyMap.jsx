@@ -1,7 +1,8 @@
 import { MapContainer, TileLayer, Marker, Popup, CircleMarker } from 'react-leaflet'
 import L from 'leaflet'
 import { Link } from 'react-router-dom'
-import { pharmacies, medicines, userLocation } from '../data/mockData.js'
+import { userLocation } from '../data/mockData.js'
+import { useData } from '../context/DataContext.jsx'
 
 // Custom pharmacy icon using divIcon (SVG)
 const pharmacyIcon = L.divIcon({
@@ -12,6 +13,8 @@ const pharmacyIcon = L.divIcon({
 })
 
 export default function PharmacyMap({ height = '100%' }) {
+  const { pharmacies, medicines } = useData()
+
   return (
     <div style={{ height }} className="rounded-2xl overflow-hidden shadow-xl border border-slate-200">
       <MapContainer center={[-25.965, 32.58]} zoom={13} scrollWheelZoom={true}>

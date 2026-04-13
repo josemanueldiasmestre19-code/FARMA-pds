@@ -15,8 +15,7 @@ export default function Login() {
   const submit = async (e) => {
     e.preventDefault()
     setLoading(true)
-    await new Promise((r) => setTimeout(r, 500))
-    const res = login(form)
+    const res = await login(form)
     setLoading(false)
     if (res.ok) {
       toast.success('Sessão iniciada!')
