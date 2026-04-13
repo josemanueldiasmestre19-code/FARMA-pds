@@ -32,7 +32,7 @@ export default function Navbar() {
             <Pill className="w-5 h-5 text-white" />
           </div>
           <div>
-            <div className="font-extrabold text-slate-900 leading-tight">Farmácia <span className="text-brand-600">Agora</span></div>
+            <div className="font-extrabold text-slate-900 leading-tight">Vona<span className="text-brand-600">med</span></div>
             <div className="text-[10px] text-slate-500 uppercase tracking-wider">Maputo • Moçambique</div>
           </div>
         </Link>

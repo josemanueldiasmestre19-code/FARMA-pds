@@ -9,7 +9,7 @@ export default function Footer() {
             <div className="w-9 h-9 rounded-xl bg-brand-500 flex items-center justify-center">
               <Pill className="w-5 h-5 text-white" />
             </div>
-            <span className="font-extrabold text-white text-lg">Farmácia Agora</span>
+            <span className="font-extrabold text-white text-lg">Vonamed</span>
           </div>
           <p className="text-sm text-slate-400 leading-relaxed">
             A plataforma digital que liga os moçambicanos aos medicamentos disponíveis nas
@@ -29,7 +29,7 @@ export default function Footer() {
           <h4 className="text-white font-semibold mb-3">Contacto</h4>
           <ul className="space-y-2 text-sm">
             <li>Maputo, Moçambique</li>
-            <li>contacto@farmaciaagora.mz</li>
+            <li>contacto@vonamed.mz</li>
             <li>+258 84 000 0000</li>
           </ul>
         </div>

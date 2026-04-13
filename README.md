@@ -1,4 +1,4 @@
-# Farmácia Agora
+# Vonamed
 
 Plataforma digital para verificar disponibilidade de medicamentos nas farmácias de Maputo, Moçambique. Projecto académico construído com **React + Vite + Tailwind CSS + Leaflet**.
 

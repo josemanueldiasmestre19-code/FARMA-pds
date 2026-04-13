@@ -38,7 +38,7 @@ export default function Register() {
             <Pill className="w-7 h-7 text-white" />
           </div>
           <h1 className="text-3xl font-extrabold text-slate-900">Criar conta</h1>
-          <p className="text-slate-500 mt-1">Junte-se à Farmácia Agora</p>
+          <p className="text-slate-500 mt-1">Junte-se à Vonamed</p>
         </div>
 
         <form onSubmit={submit} className="bg-white rounded-3xl shadow-xl border border-slate-200 p-6 space-y-4">
