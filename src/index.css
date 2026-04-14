@@ -5,6 +5,9 @@
 html, body, #root {
   height: 100%;
 }
+html {
+  scroll-behavior: smooth;
+}
 body {
   font-family: 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -35,5 +38,28 @@ body {
   box-shadow: 0 4px 12px rgba(16,185,129,0.5);
 }
 
+/* Scrollbar */
 .scrollbar-thin::-webkit-scrollbar { width: 6px; }
 .scrollbar-thin::-webkit-scrollbar-thumb { background: #d1fae5; border-radius: 3px; }
+
+/* Focus ring global */
+input:focus, select:focus, textarea:focus, button:focus-visible {
+  outline: none;
+}
+
+/* Better tap targets on mobile */
+@media (max-width: 640px) {
+  button, a {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/* Remove number input spinners */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}

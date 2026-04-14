@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase.js'
+import { translateError } from '../lib/errors.js'
 
 const AuthContext = createContext(null)
 
@@ -28,13 +29,13 @@ export function AuthProvider({ children }) {
       password,
       options: { data: { name } },
     })
-    if (error) return { ok: false, error: error.message }
+    if (error) return { ok: false, error: translateError(error.message) }
     return { ok: true, user: data.user }
   }
 
   const login = async ({ email, password }) => {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) return { ok: false, error: error.message }
+    if (error) return { ok: false, error: translateError(error.message) }
     return { ok: true, user: data.user }
   }
 

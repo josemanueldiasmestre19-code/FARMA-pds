@@ -3,6 +3,8 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { Toaster } from 'react-hot-toast'
 import Navbar from './components/Navbar.jsx'
 import Footer from './components/Footer.jsx'
+import LoadingScreen from './components/LoadingScreen.jsx'
+import ScrollToTop from './components/ScrollToTop.jsx'
 import Home from './pages/Home.jsx'
 import Search from './pages/Search.jsx'
 import MapPage from './pages/MapPage.jsx'
@@ -11,11 +13,11 @@ import Dashboard from './pages/Dashboard.jsx'
 import Login from './pages/Login.jsx'
 import Register from './pages/Register.jsx'
 import MyReservations from './pages/MyReservations.jsx'
-import { AuthProvider } from './context/AuthContext.jsx'
+import NotFound from './pages/NotFound.jsx'
+import { AuthProvider, useAuth } from './context/AuthContext.jsx'
 import { ReservationsProvider } from './context/ReservationsContext.jsx'
-import { DataProvider } from './context/DataContext.jsx'
+import { DataProvider, useData } from './context/DataContext.jsx'
 
-// Wrapper para animar transições entre páginas
 function PageWrapper({ children }) {
   return (
     <motion.div
@@ -42,8 +44,43 @@ function AnimatedRoutes() {
         <Route path="/login" element={<PageWrapper><Login /></PageWrapper>} />
         <Route path="/registo" element={<PageWrapper><Register /></PageWrapper>} />
         <Route path="/reservas" element={<PageWrapper><MyReservations /></PageWrapper>} />
+        <Route path="*" element={<PageWrapper><NotFound /></PageWrapper>} />
       </Routes>
     </AnimatePresence>
+  )
+}
+
+function AppContent() {
+  const { loading: authLoading } = useAuth()
+  const { loading: dataLoading } = useData()
+
+  if (authLoading || dataLoading) {
+    return <LoadingScreen />
+  }
+
+  return (
+    <div className="min-h-screen flex flex-col bg-slate-50">
+      <ScrollToTop />
+      <Navbar />
+      <main className="flex-1">
+        <AnimatedRoutes />
+      </main>
+      <Footer />
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          style: {
+            borderRadius: '12px',
+            background: '#0f172a',
+            color: '#fff',
+            fontSize: '14px',
+            fontWeight: 500,
+          },
+          success: { iconTheme: { primary: '#10b981', secondary: '#fff' } },
+          error: { iconTheme: { primary: '#ef4444', secondary: '#fff' } },
+        }}
+      />
+    </div>
   )
 }
 
@@ -52,26 +89,7 @@ export default function App() {
     <AuthProvider>
       <DataProvider>
         <ReservationsProvider>
-          <div className="min-h-screen flex flex-col bg-slate-50">
-          <Navbar />
-          <main className="flex-1">
-            <AnimatedRoutes />
-          </main>
-          <Footer />
-          <Toaster
-            position="top-right"
-            toastOptions={{
-              style: {
-                borderRadius: '12px',
-                background: '#0f172a',
-                color: '#fff',
-                fontSize: '14px',
-                fontWeight: 500,
-              },
-              success: { iconTheme: { primary: '#10b981', secondary: '#fff' } },
-            }}
-          />
-        </div>
+          <AppContent />
         </ReservationsProvider>
       </DataProvider>
     </AuthProvider>

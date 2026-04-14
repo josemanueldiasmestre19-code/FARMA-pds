@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import toast from 'react-hot-toast'
-import { Mail, Lock, Pill, ArrowRight } from 'lucide-react'
+import { Mail, Lock, Pill, ArrowRight, Eye, EyeOff } from 'lucide-react'
 import Button from '../components/ui/Button.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 
@@ -11,6 +11,7 @@ export default function Login() {
   const navigate = useNavigate()
   const [form, setForm] = useState({ email: '', password: '' })
   const [loading, setLoading] = useState(false)
+  const [showPass, setShowPass] = useState(false)
 
   const submit = async (e) => {
     e.preventDefault()
@@ -43,8 +44,8 @@ export default function Login() {
         <form onSubmit={submit} className="bg-white rounded-3xl shadow-xl border border-slate-200 p-6 space-y-4">
           <div>
             <label className="text-xs font-semibold text-slate-700">Email</label>
-            <div className="mt-1 flex items-center bg-slate-50 rounded-xl px-4">
-              <Mail className="w-4 h-4 text-slate-400" />
+            <div className="mt-1 flex items-center bg-slate-50 rounded-xl px-4 focus-within:ring-2 focus-within:ring-brand-300 transition">
+              <Mail className="w-4 h-4 text-slate-400 shrink-0" />
               <input
                 type="email"
                 required
@@ -57,16 +58,19 @@ export default function Login() {
           </div>
           <div>
             <label className="text-xs font-semibold text-slate-700">Palavra-passe</label>
-            <div className="mt-1 flex items-center bg-slate-50 rounded-xl px-4">
-              <Lock className="w-4 h-4 text-slate-400" />
+            <div className="mt-1 flex items-center bg-slate-50 rounded-xl px-4 focus-within:ring-2 focus-within:ring-brand-300 transition">
+              <Lock className="w-4 h-4 text-slate-400 shrink-0" />
               <input
-                type="password"
+                type={showPass ? 'text' : 'password'}
                 required
                 value={form.password}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
                 placeholder="••••••••"
                 className="flex-1 py-3 px-3 bg-transparent outline-none text-sm"
               />
+              <button type="button" onClick={() => setShowPass(!showPass)} className="p-1 text-slate-400 hover:text-slate-600 transition">
+                {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
             </div>
           </div>
           <Button type="submit" className="w-full" size="lg" disabled={loading}>
