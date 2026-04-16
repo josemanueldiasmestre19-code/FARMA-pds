@@ -1,5 +1,5 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom'
-import { Pill, Menu, X, User, LogOut, ShoppingBag, ChevronDown } from 'lucide-react'
+import { Pill, Menu, X, User, LogOut, ShoppingBag, ChevronDown, UserCircle } from 'lucide-react'
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import toast from 'react-hot-toast'
@@ -97,6 +97,9 @@ export default function Navbar() {
                       <div className="text-xs text-slate-500">Sessão iniciada como</div>
                       <div className="text-sm font-semibold text-slate-800 truncate">{user.email}</div>
                     </div>
+                    <Link to="/perfil" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition">
+                      <UserCircle className="w-4 h-4" /> Meu perfil
+                    </Link>
                     <Link to="/reservas" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition">
                       <ShoppingBag className="w-4 h-4" /> Minhas reservas
                     </Link>
@@ -166,6 +169,9 @@ export default function Navbar() {
                         <div className="text-xs text-slate-500">{user.email}</div>
                       </div>
                     </div>
+                    <Link to="/perfil" onClick={() => setOpen(false)} className="flex items-center gap-2 px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 rounded-lg transition">
+                      <UserCircle className="w-4 h-4" /> Meu perfil
+                    </Link>
                     <Link to="/reservas" onClick={() => setOpen(false)} className="flex items-center gap-2 px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 rounded-lg transition">
                       <ShoppingBag className="w-4 h-4" /> Minhas reservas
                     </Link>

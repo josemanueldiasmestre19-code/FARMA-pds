@@ -44,8 +44,25 @@ export function AuthProvider({ children }) {
     setUser(null)
   }
 
+  const updateProfile = async ({ name, email }) => {
+    const updates = {}
+    if (email && email !== user?.email) updates.email = email
+    if (name !== undefined) updates.data = { name }
+
+    const { data, error } = await supabase.auth.updateUser(updates)
+    if (error) return { ok: false, error: translateError(error.message) }
+    setUser(data.user)
+    return { ok: true }
+  }
+
+  const updatePassword = async (newPassword) => {
+    const { error } = await supabase.auth.updateUser({ password: newPassword })
+    if (error) return { ok: false, error: translateError(error.message) }
+    return { ok: true }
+  }
+
   return (
-    <AuthContext.Provider value={{ user, loading, register, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, register, login, logout, updateProfile, updatePassword }}>
       {children}
     </AuthContext.Provider>
   )

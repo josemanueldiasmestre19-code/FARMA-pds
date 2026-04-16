@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import toast from 'react-hot-toast'
 import { Mail, Lock, Pill, ArrowRight, Eye, EyeOff } from 'lucide-react'
@@ -9,6 +9,8 @@ import { useAuth } from '../context/AuthContext.jsx'
 export default function Login() {
   const { login } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+  const redirectTo = location.state?.from || '/'
   const [form, setForm] = useState({ email: '', password: '' })
   const [loading, setLoading] = useState(false)
   const [showPass, setShowPass] = useState(false)
@@ -20,7 +22,7 @@ export default function Login() {
     setLoading(false)
     if (res.ok) {
       toast.success('Sessão iniciada!')
-      navigate('/')
+      navigate(redirectTo, { replace: true })
     } else {
       toast.error(res.error)
     }
