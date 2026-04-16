@@ -1,14 +1,16 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom'
-import { Pill, Menu, X, User, LogOut, ShoppingBag, ChevronDown, UserCircle } from 'lucide-react'
+import { Pill, Menu, X, User, LogOut, ShoppingBag, ChevronDown, UserCircle, Moon, Sun } from 'lucide-react'
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import toast from 'react-hot-toast'
 import { useAuth } from '../context/AuthContext.jsx'
+import { useTheme } from '../context/ThemeContext.jsx'
 
 export default function Navbar() {
   const [open, setOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const { user, logout } = useAuth()
+  const { theme, toggleTheme } = useTheme()
   const navigate = useNavigate()
   const dropdownRef = useRef(null)
 
@@ -21,7 +23,6 @@ export default function Navbar() {
 
   const userName = user?.user_metadata?.name || user?.email?.split('@')[0] || ''
 
-  // Fechar dropdown ao clicar fora
   useEffect(() => {
     const handleClick = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -40,16 +41,26 @@ export default function Navbar() {
     navigate('/')
   }
 
+  const ThemeToggle = ({ className = '' }) => (
+    <button
+      onClick={toggleTheme}
+      className={`p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition ${className}`}
+      aria-label="Alternar tema"
+    >
+      {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+    </button>
+  )
+
   return (
-    <header className="sticky top-0 z-40 backdrop-blur-lg bg-white/80 border-b border-slate-200">
+    <header className="sticky top-0 z-40 backdrop-blur-lg bg-white/80 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2 group" onClick={() => setOpen(false)}>
           <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center shadow-lg shadow-brand-500/30 group-hover:scale-105 transition">
             <Pill className="w-5 h-5 text-white" />
           </div>
           <div>
-            <div className="font-extrabold text-slate-900 leading-tight">Vona<span className="text-brand-600">med</span></div>
-            <div className="text-[10px] text-slate-500 uppercase tracking-wider hidden sm:block">Maputo • Moçambique</div>
+            <div className="font-extrabold text-slate-900 dark:text-white leading-tight">Vona<span className="text-brand-600 dark:text-brand-400">med</span></div>
+            <div className="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider hidden sm:block">Maputo • Moçambique</div>
           </div>
         </Link>
 
@@ -63,8 +74,8 @@ export default function Navbar() {
               className={({ isActive }) =>
                 `px-4 py-2 rounded-lg text-sm font-medium transition ${
                   isActive
-                    ? 'bg-brand-50 text-brand-700'
-                    : 'text-slate-600 hover:text-brand-600 hover:bg-slate-50'
+                    ? 'bg-brand-50 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300'
+                    : 'text-slate-600 dark:text-slate-300 hover:text-brand-600 dark:hover:text-brand-400 hover:bg-slate-50 dark:hover:bg-slate-800'
                 }`
               }
             >
@@ -72,16 +83,18 @@ export default function Navbar() {
             </NavLink>
           ))}
 
+          <ThemeToggle className="ml-1" />
+
           {user ? (
             <div className="relative ml-2" ref={dropdownRef}>
               <button
                 onClick={() => setMenuOpen(!menuOpen)}
-                className="flex items-center gap-2 px-3 py-2 rounded-xl bg-brand-50 hover:bg-brand-100 transition"
+                className="flex items-center gap-2 px-3 py-2 rounded-xl bg-brand-50 dark:bg-brand-900/30 hover:bg-brand-100 dark:hover:bg-brand-900/50 transition"
               >
                 <div className="w-7 h-7 rounded-full bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center text-white text-xs font-bold">
                   {userName.charAt(0).toUpperCase()}
                 </div>
-                <span className="text-sm font-semibold text-slate-800 max-w-[120px] truncate">{userName}</span>
+                <span className="text-sm font-semibold text-slate-800 dark:text-slate-200 max-w-[120px] truncate">{userName}</span>
                 <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform ${menuOpen ? 'rotate-180' : ''}`} />
               </button>
               <AnimatePresence>
@@ -91,19 +104,19 @@ export default function Navbar() {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -5, scale: 0.95 }}
                     transition={{ duration: 0.15 }}
-                    className="absolute right-0 mt-2 w-56 bg-white border border-slate-200 rounded-xl shadow-xl py-2"
+                    className="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl py-2"
                   >
-                    <div className="px-4 py-2 border-b border-slate-100">
-                      <div className="text-xs text-slate-500">Sessão iniciada como</div>
-                      <div className="text-sm font-semibold text-slate-800 truncate">{user.email}</div>
+                    <div className="px-4 py-2 border-b border-slate-100 dark:border-slate-700">
+                      <div className="text-xs text-slate-500 dark:text-slate-400">Sessão iniciada como</div>
+                      <div className="text-sm font-semibold text-slate-800 dark:text-slate-200 truncate">{user.email}</div>
                     </div>
-                    <Link to="/perfil" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition">
+                    <Link to="/perfil" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-4 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition">
                       <UserCircle className="w-4 h-4" /> Meu perfil
                     </Link>
-                    <Link to="/reservas" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition">
+                    <Link to="/reservas" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-4 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition">
                       <ShoppingBag className="w-4 h-4" /> Minhas reservas
                     </Link>
-                    <button onClick={handleLogout} className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-rose-600 hover:bg-rose-50 transition">
+                    <button onClick={handleLogout} className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition">
                       <LogOut className="w-4 h-4" /> Terminar sessão
                     </button>
                   </motion.div>
@@ -112,7 +125,7 @@ export default function Navbar() {
             </div>
           ) : (
             <div className="flex items-center gap-2 ml-2">
-              <Link to="/login" className="px-4 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-100 transition flex items-center gap-1.5">
+              <Link to="/login" className="px-4 py-2 rounded-lg text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex items-center gap-1.5">
                 <User className="w-4 h-4" /> Entrar
               </Link>
               <Link
@@ -125,10 +138,13 @@ export default function Navbar() {
           )}
         </nav>
 
-        {/* Mobile hamburger */}
-        <button className="md:hidden p-2 rounded-lg hover:bg-slate-100 transition" onClick={() => setOpen(!open)}>
-          {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-        </button>
+        {/* Mobile buttons */}
+        <div className="flex items-center gap-1 md:hidden">
+          <ThemeToggle />
+          <button className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition text-slate-700 dark:text-slate-200" onClick={() => setOpen(!open)}>
+            {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile menu */}
@@ -139,7 +155,7 @@ export default function Navbar() {
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="md:hidden overflow-hidden border-t border-slate-200 bg-white"
+            className="md:hidden overflow-hidden border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900"
           >
             <div className="px-4 py-3 space-y-1">
               {links.map((l) => (
@@ -150,14 +166,14 @@ export default function Navbar() {
                   onClick={() => setOpen(false)}
                   className={({ isActive }) =>
                     `block px-3 py-2.5 rounded-lg text-sm font-medium transition ${
-                      isActive ? 'bg-brand-50 text-brand-700' : 'text-slate-700 hover:bg-slate-50'
+                      isActive ? 'bg-brand-50 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800'
                     }`
                   }
                 >
                   {l.label}
                 </NavLink>
               ))}
-              <div className="border-t border-slate-100 pt-2 mt-2">
+              <div className="border-t border-slate-100 dark:border-slate-800 pt-2 mt-2">
                 {user ? (
                   <>
                     <div className="flex items-center gap-3 px-3 py-2.5">
@@ -165,23 +181,23 @@ export default function Navbar() {
                         {userName.charAt(0).toUpperCase()}
                       </div>
                       <div>
-                        <div className="text-sm font-semibold text-slate-800">{userName}</div>
-                        <div className="text-xs text-slate-500">{user.email}</div>
+                        <div className="text-sm font-semibold text-slate-800 dark:text-slate-200">{userName}</div>
+                        <div className="text-xs text-slate-500 dark:text-slate-400">{user.email}</div>
                       </div>
                     </div>
-                    <Link to="/perfil" onClick={() => setOpen(false)} className="flex items-center gap-2 px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 rounded-lg transition">
+                    <Link to="/perfil" onClick={() => setOpen(false)} className="flex items-center gap-2 px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition">
                       <UserCircle className="w-4 h-4" /> Meu perfil
                     </Link>
-                    <Link to="/reservas" onClick={() => setOpen(false)} className="flex items-center gap-2 px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 rounded-lg transition">
+                    <Link to="/reservas" onClick={() => setOpen(false)} className="flex items-center gap-2 px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition">
                       <ShoppingBag className="w-4 h-4" /> Minhas reservas
                     </Link>
-                    <button onClick={handleLogout} className="w-full text-left flex items-center gap-2 px-3 py-2.5 text-sm font-medium text-rose-600 hover:bg-rose-50 rounded-lg transition">
+                    <button onClick={handleLogout} className="w-full text-left flex items-center gap-2 px-3 py-2.5 text-sm font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-lg transition">
                       <LogOut className="w-4 h-4" /> Terminar sessão
                     </button>
                   </>
                 ) : (
                   <div className="flex flex-col gap-2 pt-1">
-                    <Link to="/login" onClick={() => setOpen(false)} className="block px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 rounded-lg transition">
+                    <Link to="/login" onClick={() => setOpen(false)} className="block px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition">
                       Entrar
                     </Link>
                     <Link to="/registo" onClick={() => setOpen(false)} className="block px-3 py-2.5 text-sm font-semibold text-center bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition">

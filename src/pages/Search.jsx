@@ -102,19 +102,19 @@ export default function Search() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
       <div className="mb-8">
-        <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900">Pesquisar medicamentos</h1>
-        <p className="mt-2 text-slate-600">Encontre onde está disponível em Maputo</p>
+        <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white">Pesquisar medicamentos</h1>
+        <p className="mt-2 text-slate-600 dark:text-slate-300">Encontre onde está disponível em Maputo</p>
       </div>
 
       {/* Search bar */}
-      <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-3 flex flex-col sm:flex-row gap-3 mb-4">
-        <div className="flex-1 flex items-center bg-slate-50 rounded-xl px-4 focus-within:ring-2 focus-within:ring-brand-300 transition">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-800 p-3 flex flex-col sm:flex-row gap-3 mb-4">
+        <div className="flex-1 flex items-center bg-slate-50 dark:bg-slate-800 rounded-xl px-4 focus-within:ring-2 focus-within:ring-brand-300 transition">
           <SearchIcon className="w-5 h-5 text-slate-400 shrink-0" />
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Nome do medicamento ou categoria..."
-            className="flex-1 py-3 px-3 bg-transparent outline-none text-slate-800 min-w-0"
+            className="flex-1 py-3 px-3 bg-transparent outline-none text-slate-800 dark:text-slate-100 min-w-0"
           />
           {query && (
             <button onClick={() => setQuery('')} className="p-1 text-slate-400 hover:text-slate-600">
@@ -125,7 +125,7 @@ export default function Search() {
         <button
           onClick={() => setOnlyAvailable(!onlyAvailable)}
           className={`px-5 py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition active:scale-95 ${
-            onlyAvailable ? 'bg-brand-600 text-white shadow-md shadow-brand-500/30' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+            onlyAvailable ? 'bg-brand-600 text-white shadow-md shadow-brand-500/30' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700'
           }`}
         >
           <Filter className="w-4 h-4" /> Só disponíveis
@@ -134,12 +134,12 @@ export default function Search() {
 
       {/* Filtros */}
       <div className="flex flex-wrap gap-3 mb-6">
-        <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-xl px-3 py-2 shadow-sm">
-          <label className="text-xs font-semibold text-slate-500">Categoria:</label>
+        <div className="flex items-center gap-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 shadow-sm">
+          <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">Categoria:</label>
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="bg-transparent outline-none text-sm font-semibold text-slate-800 pr-2 cursor-pointer"
+            className="bg-transparent outline-none text-sm font-semibold text-slate-800 dark:text-slate-200 pr-2 cursor-pointer"
           >
             <option value="">Todas</option>
             {categories.map((c) => (
@@ -147,12 +147,12 @@ export default function Search() {
             ))}
           </select>
         </div>
-        <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-xl px-3 py-2 shadow-sm">
-          <label className="text-xs font-semibold text-slate-500">Ordenar:</label>
+        <div className="flex items-center gap-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 shadow-sm">
+          <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">Ordenar:</label>
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="bg-transparent outline-none text-sm font-semibold text-slate-800 pr-2 cursor-pointer"
+            className="bg-transparent outline-none text-sm font-semibold text-slate-800 dark:text-slate-200 pr-2 cursor-pointer"
           >
             {SORT_OPTIONS.map((o) => (
               <option key={o.value} value={o.value}>{o.label}</option>
@@ -171,12 +171,12 @@ export default function Search() {
 
       {/* Result count */}
       <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-        <div className="text-sm text-slate-600">
+        <div className="text-sm text-slate-600 dark:text-slate-300">
           {isLoading ? 'A pesquisar...' : (
-            <><span className="font-bold text-slate-900">{results.length}</span> resultados encontrados</>
+            <><span className="font-bold text-slate-900 dark:text-white">{results.length}</span> resultados encontrados</>
           )}
         </div>
-        <div className="text-xs text-slate-500 flex items-center gap-1">
+        <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1">
           <SlidersHorizontal className="w-4 h-4" /> {sortLabel}
         </div>
       </div>
@@ -211,7 +211,7 @@ export default function Search() {
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="px-4 py-2 rounded-lg border border-slate-200 bg-white text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
+                className="px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition"
               >
                 Anterior
               </button>
@@ -224,7 +224,7 @@ export default function Search() {
                       <button
                         onClick={() => setPage(n)}
                         className={`w-9 h-9 rounded-lg text-sm font-semibold transition ${
-                          n === page ? 'bg-brand-600 text-white' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'
+                          n === page ? 'bg-brand-600 text-white' : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800'
                         }`}
                       >
                         {n}
@@ -235,7 +235,7 @@ export default function Search() {
               <button
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
-                className="px-4 py-2 rounded-lg border border-slate-200 bg-white text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
+                className="px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition"
               >
                 Próximo
               </button>

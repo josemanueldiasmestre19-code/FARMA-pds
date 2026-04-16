@@ -9,11 +9,11 @@ export default function MedicineCard({ medicine, pharmacy, distance, stock, onRe
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -2 }}
-      className="group bg-white rounded-2xl p-5 border border-slate-200 hover:border-brand-400 hover:shadow-xl hover:shadow-brand-500/10 transition-all">
+      className="group bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 hover:border-brand-400 dark:hover:border-brand-500 hover:shadow-xl hover:shadow-brand-500/10 transition-all">
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-xs font-semibold text-brand-700 bg-brand-50 px-2 py-0.5 rounded-full">
+            <span className="text-xs font-semibold text-brand-700 dark:text-brand-300 bg-brand-50 dark:bg-brand-900/30 px-2 py-0.5 rounded-full">
               {medicine.category}
             </span>
             {available ? (
@@ -26,16 +26,16 @@ export default function MedicineCard({ medicine, pharmacy, distance, stock, onRe
               </span>
             )}
           </div>
-          <h3 className="font-bold text-slate-900 truncate">{medicine.name}</h3>
-          <Link to={`/farmacia/${pharmacy.id}`} className="text-sm text-slate-600 hover:text-brand-600 flex items-center gap-1 mt-1">
+          <h3 className="font-bold text-slate-900 dark:text-white truncate">{medicine.name}</h3>
+          <Link to={`/farmacia/${pharmacy.id}`} className="text-sm text-slate-600 dark:text-slate-300 hover:text-brand-600 dark:hover:text-brand-400 flex items-center gap-1 mt-1">
             <MapPin className="w-3.5 h-3.5" /> {pharmacy.name}
           </Link>
-          <div className="text-xs text-slate-500 mt-1">
+          <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">
             {distance.toFixed(1)} km de distância • {pharmacy.hours}
           </div>
         </div>
         <div className="text-right shrink-0">
-          <div className="text-lg font-extrabold text-slate-900">{medicine.price} MT</div>
+          <div className="text-lg font-extrabold text-slate-900 dark:text-white">{medicine.price} MT</div>
           <button
             disabled={!available}
             onClick={() => onReserve?.(medicine, pharmacy)}

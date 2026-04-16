@@ -13,9 +13,14 @@ body {
   -webkit-font-smoothing: antialiased;
   background: #f8fafc;
   color: #0f172a;
+  transition: background-color 0.2s, color 0.2s;
+}
+.dark body {
+  background: #0f172a;
+  color: #f1f5f9;
 }
 
-/* Leaflet fixes */
+/* Leaflet */
 .leaflet-container {
   height: 100%;
   width: 100%;
@@ -29,25 +34,23 @@ body {
 .leaflet-popup-content {
   margin: 14px 16px;
 }
-
-/* Custom marker */
-.pharmacy-marker {
-  background: #10b981;
-  border: 3px solid white;
-  border-radius: 50%;
-  box-shadow: 0 4px 12px rgba(16,185,129,0.5);
+.dark .leaflet-popup-content-wrapper,
+.dark .leaflet-popup-tip {
+  background: #1e293b;
+  color: #f1f5f9;
 }
 
 /* Scrollbar */
 .scrollbar-thin::-webkit-scrollbar { width: 6px; }
 .scrollbar-thin::-webkit-scrollbar-thumb { background: #d1fae5; border-radius: 3px; }
+.dark .scrollbar-thin::-webkit-scrollbar-thumb { background: #059669; }
 
-/* Focus ring global */
+/* Focus */
 input:focus, select:focus, textarea:focus, button:focus-visible {
   outline: none;
 }
 
-/* Better tap targets on mobile */
+/* Mobile tap */
 @media (max-width: 640px) {
   button, a {
     -webkit-tap-highlight-color: transparent;

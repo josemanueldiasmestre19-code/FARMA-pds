@@ -24,7 +24,7 @@ export default function Home() {
     <div>
       {/* Hero */}
       <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-brand-50 via-white to-emerald-50" />
+        <div className="absolute inset-0 bg-gradient-to-br from-brand-50 via-white to-emerald-50 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900" />
         <div className="absolute top-20 -right-20 w-96 h-96 bg-brand-200 rounded-full blur-3xl opacity-40" />
         <div className="absolute bottom-0 -left-20 w-96 h-96 bg-emerald-200 rounded-full blur-3xl opacity-30" />
 
@@ -36,19 +36,19 @@ export default function Home() {
                 Disponível agora em Maputo
               </div>
 
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-slate-900 leading-[1.05] tracking-tight">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-slate-900 dark:text-white leading-[1.05] tracking-tight">
                 O seu medicamento, <br />
                 <span className="bg-gradient-to-r from-brand-600 to-emerald-500 bg-clip-text text-transparent">
                   a um clique de distância.
                 </span>
               </h1>
 
-              <p className="mt-6 text-lg text-slate-600 max-w-xl leading-relaxed">
+              <p className="mt-6 text-lg text-slate-600 dark:text-slate-300 max-w-xl leading-relaxed">
                 Verifique em tempo real quais farmácias de Maputo têm o medicamento que
                 precisa — antes de sair de casa. Poupe tempo, poupe deslocações.
               </p>
 
-              <form onSubmit={handleSearch} className="mt-8 bg-white rounded-2xl shadow-xl shadow-brand-500/10 border border-slate-200 p-2 flex items-center max-w-xl">
+              <form onSubmit={handleSearch} className="mt-8 bg-white dark:bg-slate-900 rounded-2xl shadow-xl shadow-brand-500/10 border border-slate-200 dark:border-slate-800 p-2 flex items-center max-w-xl">
                 <div className="pl-4 pr-2 text-slate-400">
                   <Search className="w-5 h-5" />
                 </div>
@@ -78,7 +78,7 @@ export default function Home() {
 
             {/* Visual card */}
             <div className="relative animate-fade-in">
-              <div className="relative bg-white rounded-3xl shadow-2xl shadow-brand-500/20 border border-slate-200 p-6 rotate-1 hover:rotate-0 transition-transform">
+              <div className="relative bg-white dark:bg-slate-900 rounded-3xl shadow-2xl shadow-brand-500/20 border border-slate-200 dark:border-slate-800 p-6 rotate-1 hover:rotate-0 transition-transform">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
                     <div className="w-10 h-10 rounded-xl bg-brand-500 flex items-center justify-center">
@@ -129,13 +129,13 @@ export default function Home() {
 
       {/* Stats */}
       <section className="max-w-7xl mx-auto px-6 -mt-10 relative z-10">
-        <div className="bg-white rounded-3xl shadow-xl border border-slate-200 p-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-xl border border-slate-200 dark:border-slate-800 p-6 grid grid-cols-2 md:grid-cols-4 gap-4">
           {stats.map((s) => (
             <div key={s.label} className="text-center p-4">
               <div className="inline-flex w-12 h-12 rounded-xl bg-brand-50 items-center justify-center mb-2">
                 <s.icon className="w-5 h-5 text-brand-600" />
               </div>
-              <div className="text-2xl font-extrabold text-slate-900">{s.value}</div>
+              <div className="text-2xl font-extrabold text-slate-900 dark:text-white">{s.value}</div>
               <div className="text-xs text-slate-500 uppercase tracking-wide mt-1">{s.label}</div>
             </div>
           ))}
@@ -145,8 +145,8 @@ export default function Home() {
       {/* How it works */}
       <section className="max-w-7xl mx-auto px-6 py-20">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900">Como funciona</h2>
-          <p className="mt-3 text-slate-600">Três passos simples para encontrar o seu medicamento</p>
+          <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white">Como funciona</h2>
+          <p className="mt-3 text-slate-600 dark:text-slate-300">Três passos simples para encontrar o seu medicamento</p>
         </div>
         <div className="grid md:grid-cols-3 gap-6">
           {[
@@ -154,12 +154,12 @@ export default function Home() {
             { icon: MapPin, title: '2. Descubra', text: 'Veja farmácias próximas com stock disponível.' },
             { icon: CheckCircle2, title: '3. Reserve', text: 'Reserve e levante. Sem filas, sem stress.' },
           ].map((step) => (
-            <div key={step.title} className="bg-white rounded-2xl p-8 border border-slate-200 hover:border-brand-400 hover:shadow-xl transition group">
+            <div key={step.title} className="bg-white dark:bg-slate-900 rounded-2xl p-8 border border-slate-200 dark:border-slate-800 hover:border-brand-400 hover:shadow-xl transition group">
               <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center shadow-lg shadow-brand-500/30 mb-5 group-hover:scale-110 transition">
                 <step.icon className="w-6 h-6 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-slate-900">{step.title}</h3>
-              <p className="mt-2 text-slate-600">{step.text}</p>
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white">{step.title}</h3>
+              <p className="mt-2 text-slate-600 dark:text-slate-300">{step.text}</p>
             </div>
           ))}
         </div>

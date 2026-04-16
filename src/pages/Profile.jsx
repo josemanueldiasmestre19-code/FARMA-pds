@@ -79,36 +79,36 @@ export default function Profile() {
 
         <div className="grid md:grid-cols-2 gap-6">
           {/* Informação pessoal */}
-          <form onSubmit={submitProfile} className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-            <h2 className="text-lg font-bold text-slate-900 mb-1">Informação pessoal</h2>
-            <p className="text-xs text-slate-500 mb-4">Actualize os seus dados</p>
+          <form onSubmit={submitProfile} className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6">
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-1">Informação pessoal</h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">Actualize os seus dados</p>
 
             <div className="space-y-4">
               <div>
-                <label className="text-xs font-semibold text-slate-700">Nome completo</label>
-                <div className="mt-1 flex items-center bg-slate-50 rounded-xl px-4 focus-within:ring-2 focus-within:ring-brand-300 transition">
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Nome completo</label>
+                <div className="mt-1 flex items-center bg-slate-50 dark:bg-slate-800 rounded-xl px-4 focus-within:ring-2 focus-within:ring-brand-300 transition">
                   <User className="w-4 h-4 text-slate-400 shrink-0" />
                   <input
                     required
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    className="flex-1 py-3 px-3 bg-transparent outline-none text-sm"
+                    className="flex-1 py-3 px-3 bg-transparent outline-none text-sm text-slate-900 dark:text-slate-100"
                   />
                 </div>
               </div>
               <div>
-                <label className="text-xs font-semibold text-slate-700">Email</label>
-                <div className="mt-1 flex items-center bg-slate-50 rounded-xl px-4 focus-within:ring-2 focus-within:ring-brand-300 transition">
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Email</label>
+                <div className="mt-1 flex items-center bg-slate-50 dark:bg-slate-800 rounded-xl px-4 focus-within:ring-2 focus-within:ring-brand-300 transition">
                   <Mail className="w-4 h-4 text-slate-400 shrink-0" />
                   <input
                     type="email"
                     required
                     value={form.email}
                     onChange={(e) => setForm({ ...form, email: e.target.value })}
-                    className="flex-1 py-3 px-3 bg-transparent outline-none text-sm"
+                    className="flex-1 py-3 px-3 bg-transparent outline-none text-sm text-slate-900 dark:text-slate-100"
                   />
                 </div>
-                <p className="text-[11px] text-slate-400 mt-1 pl-1">
+                <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1 pl-1">
                   Alterar o email pode exigir nova confirmação
                 </p>
               </div>
@@ -119,14 +119,14 @@ export default function Profile() {
           </form>
 
           {/* Alterar palavra-passe */}
-          <form onSubmit={submitPassword} className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-            <h2 className="text-lg font-bold text-slate-900 mb-1">Palavra-passe</h2>
-            <p className="text-xs text-slate-500 mb-4">Mantenha a sua conta segura</p>
+          <form onSubmit={submitPassword} className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6">
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-1">Palavra-passe</h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">Mantenha a sua conta segura</p>
 
             <div className="space-y-4">
               <div>
-                <label className="text-xs font-semibold text-slate-700">Nova palavra-passe</label>
-                <div className="mt-1 flex items-center bg-slate-50 rounded-xl px-4 focus-within:ring-2 focus-within:ring-brand-300 transition">
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Nova palavra-passe</label>
+                <div className="mt-1 flex items-center bg-slate-50 dark:bg-slate-800 rounded-xl px-4 focus-within:ring-2 focus-within:ring-brand-300 transition">
                   <Lock className="w-4 h-4 text-slate-400 shrink-0" />
                   <input
                     type={showPass ? 'text' : 'password'}
@@ -135,7 +135,7 @@ export default function Profile() {
                     value={passForm.newPassword}
                     onChange={(e) => setPassForm({ ...passForm, newPassword: e.target.value })}
                     placeholder="Mínimo 6 caracteres"
-                    className="flex-1 py-3 px-3 bg-transparent outline-none text-sm"
+                    className="flex-1 py-3 px-3 bg-transparent outline-none text-sm text-slate-900 dark:text-slate-100"
                   />
                   <button type="button" onClick={() => setShowPass(!showPass)} className="p-1 text-slate-400 hover:text-slate-600">
                     {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -143,8 +143,8 @@ export default function Profile() {
                 </div>
               </div>
               <div>
-                <label className="text-xs font-semibold text-slate-700">Confirmar palavra-passe</label>
-                <div className="mt-1 flex items-center bg-slate-50 rounded-xl px-4 focus-within:ring-2 focus-within:ring-brand-300 transition">
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Confirmar palavra-passe</label>
+                <div className="mt-1 flex items-center bg-slate-50 dark:bg-slate-800 rounded-xl px-4 focus-within:ring-2 focus-within:ring-brand-300 transition">
                   <Lock className="w-4 h-4 text-slate-400 shrink-0" />
                   <input
                     type={showPass ? 'text' : 'password'}
@@ -153,7 +153,7 @@ export default function Profile() {
                     value={passForm.confirm}
                     onChange={(e) => setPassForm({ ...passForm, confirm: e.target.value })}
                     placeholder="Repita a palavra-passe"
-                    className="flex-1 py-3 px-3 bg-transparent outline-none text-sm"
+                    className="flex-1 py-3 px-3 bg-transparent outline-none text-sm text-slate-900 dark:text-slate-100"
                   />
                 </div>
               </div>

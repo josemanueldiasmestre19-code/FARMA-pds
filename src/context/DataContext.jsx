@@ -43,6 +43,29 @@ export function DataProvider({ children }) {
     }
 
     fetchData()
+
+    // Subscrever mudanças de stock em tempo real
+    const channel = supabase
+      .channel('stock-changes')
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'pharmacy_stock' },
+        (payload) => {
+          const { pharmacy_id, medicine_id, available, qty } = payload.new
+          setPharmacies((prev) =>
+            prev.map((p) =>
+              p.id === pharmacy_id
+                ? { ...p, stock: { ...p.stock, [medicine_id]: { available, qty } } }
+                : p
+            )
+          )
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
   }, [])
 
   return (

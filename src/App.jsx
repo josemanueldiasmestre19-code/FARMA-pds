@@ -5,6 +5,7 @@ import Navbar from './components/Navbar.jsx'
 import Footer from './components/Footer.jsx'
 import LoadingScreen from './components/LoadingScreen.jsx'
 import ScrollToTop from './components/ScrollToTop.jsx'
+import InstallPrompt from './components/InstallPrompt.jsx'
 import Home from './pages/Home.jsx'
 import Search from './pages/Search.jsx'
 import MapPage from './pages/MapPage.jsx'
@@ -19,6 +20,7 @@ import ProtectedRoute from './components/ProtectedRoute.jsx'
 import { AuthProvider, useAuth } from './context/AuthContext.jsx'
 import { ReservationsProvider } from './context/ReservationsContext.jsx'
 import { DataProvider, useData } from './context/DataContext.jsx'
+import { ThemeProvider } from './context/ThemeContext.jsx'
 
 function PageWrapper({ children }) {
   return (
@@ -62,13 +64,14 @@ function AppContent() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50">
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950">
       <ScrollToTop />
       <Navbar />
       <main className="flex-1">
         <AnimatedRoutes />
       </main>
       <Footer />
+      <InstallPrompt />
       <Toaster
         position="top-right"
         toastOptions={{
@@ -89,12 +92,14 @@ function AppContent() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <DataProvider>
-        <ReservationsProvider>
-          <AppContent />
-        </ReservationsProvider>
-      </DataProvider>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <DataProvider>
+          <ReservationsProvider>
+            <AppContent />
+          </ReservationsProvider>
+        </DataProvider>
+      </AuthProvider>
+    </ThemeProvider>
   )
 }

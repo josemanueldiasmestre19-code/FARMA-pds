@@ -3,7 +3,7 @@ import { Pill, Heart, Mail, Phone, MapPin } from 'lucide-react'
 
 export default function Footer() {
   return (
-    <footer className="bg-slate-900 text-slate-300 mt-16">
+    <footer className="bg-slate-900 dark:bg-slate-950 text-slate-300 mt-16 border-t border-slate-800 dark:border-slate-800">
       <div className="max-w-7xl mx-auto px-6 py-12 grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
         <div className="sm:col-span-2 lg:col-span-1">
           <div className="flex items-center gap-2 mb-3">

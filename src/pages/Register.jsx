@@ -37,27 +37,27 @@ export default function Register() {
           <div className="inline-flex w-14 h-14 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 items-center justify-center shadow-lg shadow-brand-500/30 mb-4">
             <Pill className="w-7 h-7 text-white" />
           </div>
-          <h1 className="text-3xl font-extrabold text-slate-900">Criar conta</h1>
-          <p className="text-slate-500 mt-1">Junte-se à Vonamed</p>
+          <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white">Criar conta</h1>
+          <p className="text-slate-500 dark:text-slate-400 mt-1">Junte-se à Vonamed</p>
         </div>
 
-        <form onSubmit={submit} className="bg-white rounded-3xl shadow-xl border border-slate-200 p-6 space-y-4">
+        <form onSubmit={submit} className="bg-white dark:bg-slate-900 rounded-3xl shadow-xl border border-slate-200 dark:border-slate-800 p-6 space-y-4">
           <div>
-            <label className="text-xs font-semibold text-slate-700">Nome completo</label>
-            <div className="mt-1 flex items-center bg-slate-50 rounded-xl px-4 focus-within:ring-2 focus-within:ring-brand-300 transition">
+            <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Nome completo</label>
+            <div className="mt-1 flex items-center bg-slate-50 dark:bg-slate-800 rounded-xl px-4 focus-within:ring-2 focus-within:ring-brand-300 transition">
               <User className="w-4 h-4 text-slate-400 shrink-0" />
               <input
                 required
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                 placeholder="João Mucavele"
-                className="flex-1 py-3 px-3 bg-transparent outline-none text-sm"
+                className="flex-1 py-3 px-3 bg-transparent outline-none text-sm text-slate-900 dark:text-slate-100"
               />
             </div>
           </div>
           <div>
-            <label className="text-xs font-semibold text-slate-700">Email</label>
-            <div className="mt-1 flex items-center bg-slate-50 rounded-xl px-4 focus-within:ring-2 focus-within:ring-brand-300 transition">
+            <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Email</label>
+            <div className="mt-1 flex items-center bg-slate-50 dark:bg-slate-800 rounded-xl px-4 focus-within:ring-2 focus-within:ring-brand-300 transition">
               <Mail className="w-4 h-4 text-slate-400 shrink-0" />
               <input
                 type="email"
@@ -65,13 +65,13 @@ export default function Register() {
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
                 placeholder="o.seu@email.com"
-                className="flex-1 py-3 px-3 bg-transparent outline-none text-sm"
+                className="flex-1 py-3 px-3 bg-transparent outline-none text-sm text-slate-900 dark:text-slate-100"
               />
             </div>
           </div>
           <div>
-            <label className="text-xs font-semibold text-slate-700">Palavra-passe</label>
-            <div className="mt-1 flex items-center bg-slate-50 rounded-xl px-4 focus-within:ring-2 focus-within:ring-brand-300 transition">
+            <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Palavra-passe</label>
+            <div className="mt-1 flex items-center bg-slate-50 dark:bg-slate-800 rounded-xl px-4 focus-within:ring-2 focus-within:ring-brand-300 transition">
               <Lock className="w-4 h-4 text-slate-400 shrink-0" />
               <input
                 type={showPass ? 'text' : 'password'}
@@ -80,20 +80,20 @@ export default function Register() {
                 value={form.password}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
                 placeholder="Mínimo 6 caracteres"
-                className="flex-1 py-3 px-3 bg-transparent outline-none text-sm"
+                className="flex-1 py-3 px-3 bg-transparent outline-none text-sm text-slate-900 dark:text-slate-100"
               />
               <button type="button" onClick={() => setShowPass(!showPass)} className="p-1 text-slate-400 hover:text-slate-600 transition">
                 {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
-            <p className="text-[11px] text-slate-400 mt-1 pl-1">Mínimo 6 caracteres</p>
+            <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1 pl-1">Mínimo 6 caracteres</p>
           </div>
           <Button type="submit" className="w-full" size="lg" disabled={loading}>
             {loading ? 'A criar conta...' : (<>Criar conta <ArrowRight className="w-4 h-4" /></>)}
           </Button>
         </form>
 
-        <p className="text-center text-sm text-slate-500 mt-6">
+        <p className="text-center text-sm text-slate-500 dark:text-slate-400 mt-6">
           Já tem conta?{' '}
           <Link to="/login" className="text-brand-700 font-semibold hover:underline">Iniciar sessão</Link>
         </p>

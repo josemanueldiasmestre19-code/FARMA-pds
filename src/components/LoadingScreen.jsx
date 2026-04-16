@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 
 export default function LoadingScreen() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950">
       <motion.div
         animate={{ scale: [1, 1.15, 1], rotate: [0, 5, -5, 0] }}
         transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
@@ -11,10 +11,10 @@ export default function LoadingScreen() {
       >
         <Pill className="w-8 h-8 text-white" />
       </motion.div>
-      <div className="font-extrabold text-slate-900 text-xl">
-        Vona<span className="text-brand-600">med</span>
+      <div className="font-extrabold text-slate-900 dark:text-white text-xl">
+        Vona<span className="text-brand-600 dark:text-brand-400">med</span>
       </div>
-      <p className="text-sm text-slate-500 mt-2">A carregar...</p>
+      <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">A carregar...</p>
     </div>
   )
 }

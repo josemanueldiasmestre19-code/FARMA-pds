@@ -17,16 +17,16 @@ export default function Modal({ open, onClose, title, children }) {
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: 30, opacity: 0, scale: 0.95 }}
             transition={{ type: 'spring', damping: 22 }}
-            className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 relative"
+            className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl max-w-md w-full p-6 relative"
             onClick={(e) => e.stopPropagation()}
           >
             <button
               onClick={onClose}
-              className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100"
+              className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
             >
               <X className="w-5 h-5" />
             </button>
-            {title && <h3 className="text-xl font-extrabold text-slate-900 mb-4 pr-8">{title}</h3>}
+            {title && <h3 className="text-xl font-extrabold text-slate-900 dark:text-white mb-4 pr-8">{title}</h3>}
             {children}
           </motion.div>
         </motion.div>
