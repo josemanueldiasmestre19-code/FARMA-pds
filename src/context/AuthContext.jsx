@@ -61,8 +61,10 @@ export function AuthProvider({ children }) {
     return { ok: true }
   }
 
+  const isAdmin = user?.app_metadata?.role === 'admin'
+
   return (
-    <AuthContext.Provider value={{ user, loading, register, login, logout, updateProfile, updatePassword }}>
+    <AuthContext.Provider value={{ user, loading, isAdmin, register, login, logout, updateProfile, updatePassword }}>
       {children}
     </AuthContext.Provider>
   )

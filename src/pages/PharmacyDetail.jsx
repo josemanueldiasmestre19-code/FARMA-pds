@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { MapPin, Phone, Clock, Star, ArrowLeft, CheckCircle2, XCircle, ShoppingBag } from 'lucide-react'
 import ReserveModal from '../components/ReserveModal.jsx'
+import PharmacyReviews from '../components/PharmacyReviews.jsx'
 import { useData } from '../context/DataContext.jsx'
 
 export default function PharmacyDetail() {
@@ -88,6 +89,8 @@ export default function PharmacyDetail() {
           })}
         </div>
       </div>
+
+      <PharmacyReviews pharmacyId={pharmacy.id} />
 
       <ReserveModal
         open={!!reserveMed}

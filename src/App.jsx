@@ -15,12 +15,15 @@ import Login from './pages/Login.jsx'
 import Register from './pages/Register.jsx'
 import MyReservations from './pages/MyReservations.jsx'
 import Profile from './pages/Profile.jsx'
+import Admin from './pages/Admin.jsx'
 import NotFound from './pages/NotFound.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
+import AdminRoute from './components/AdminRoute.jsx'
 import { AuthProvider, useAuth } from './context/AuthContext.jsx'
 import { ReservationsProvider } from './context/ReservationsContext.jsx'
 import { DataProvider, useData } from './context/DataContext.jsx'
 import { ThemeProvider } from './context/ThemeContext.jsx'
+import { I18nProvider } from './context/I18nContext.jsx'
 
 function PageWrapper({ children }) {
   return (
@@ -49,6 +52,7 @@ function AnimatedRoutes() {
         <Route path="/registo" element={<PageWrapper><Register /></PageWrapper>} />
         <Route path="/reservas" element={<ProtectedRoute><PageWrapper><MyReservations /></PageWrapper></ProtectedRoute>} />
         <Route path="/perfil" element={<ProtectedRoute><PageWrapper><Profile /></PageWrapper></ProtectedRoute>} />
+        <Route path="/admin" element={<AdminRoute><PageWrapper><Admin /></PageWrapper></AdminRoute>} />
         <Route path="*" element={<PageWrapper><NotFound /></PageWrapper>} />
       </Routes>
     </AnimatePresence>
@@ -93,13 +97,15 @@ function AppContent() {
 export default function App() {
   return (
     <ThemeProvider>
-      <AuthProvider>
-        <DataProvider>
-          <ReservationsProvider>
-            <AppContent />
-          </ReservationsProvider>
-        </DataProvider>
-      </AuthProvider>
+      <I18nProvider>
+        <AuthProvider>
+          <DataProvider>
+            <ReservationsProvider>
+              <AppContent />
+            </ReservationsProvider>
+          </DataProvider>
+        </AuthProvider>
+      </I18nProvider>
     </ThemeProvider>
   )
 }
