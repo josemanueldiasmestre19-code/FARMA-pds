@@ -30,8 +30,8 @@ export default function Home() {
         <div className="absolute top-20 -right-20 w-96 h-96 bg-brand-200 rounded-full blur-3xl opacity-40" />
         <div className="absolute bottom-0 -left-20 w-96 h-96 bg-emerald-200 rounded-full blur-3xl opacity-30" />
 
-        <div className="relative max-w-7xl mx-auto px-6 pt-16 pb-20 lg:pt-24 lg:pb-28">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 pt-16 pb-20 lg:pt-24 lg:pb-28 overflow-hidden">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             <div className="animate-slide-up">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/80 backdrop-blur border border-brand-200 rounded-full text-xs font-semibold text-brand-700 mb-6 shadow-sm">
                 <span className="w-2 h-2 bg-brand-500 rounded-full animate-pulse" />
@@ -78,8 +78,8 @@ export default function Home() {
             </div>
 
             {/* Visual card */}
-            <div className="relative animate-fade-in">
-              <div className="relative bg-white dark:bg-slate-900 rounded-3xl shadow-2xl shadow-brand-500/20 border border-slate-200 dark:border-slate-800 p-6 rotate-1 hover:rotate-0 transition-transform">
+            <div className="relative animate-fade-in hidden sm:block">
+              <div className="relative bg-white dark:bg-slate-900 rounded-3xl shadow-2xl shadow-brand-500/20 border border-slate-200 dark:border-slate-800 p-6 lg:rotate-1 lg:hover:rotate-0 transition-transform">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
                     <div className="w-10 h-10 rounded-xl bg-brand-500 flex items-center justify-center">
