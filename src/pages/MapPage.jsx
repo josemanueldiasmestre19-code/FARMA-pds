@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { MapPin, Star, Clock, Navigation, Crosshair, Loader2, MousePointer2 } from 'lucide-react'
 import PharmacyMap from '../components/PharmacyMap.jsx'
+import AddressSearch from '../components/AddressSearch.jsx'
 import { useData } from '../context/DataContext.jsx'
 import { useI18n } from '../context/I18nContext.jsx'
 import useUserLocation from '../hooks/useUserLocation.js'
@@ -70,56 +71,55 @@ export default function MapPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-        <div>
-          <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white">{t('map_title')}</h1>
-          <p className="mt-2 text-slate-600 dark:text-slate-300">{t('map_subtitle')}</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="flex flex-col items-end gap-1">
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setManualMode(!manualMode)}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold shadow-sm transition ${
-                  manualMode
-                    ? 'bg-blue-500 text-white shadow-blue-500/30'
-                    : isManuallySet
-                    ? 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300'
-                    : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800'
-                }`}
-              >
-                <MousePointer2 className="w-4 h-4" />
-                {manualMode ? 'Clique no mapa...' : isManuallySet ? 'Posição definida' : 'Marcar no mapa'}
-              </button>
-              <button
-                onClick={requestLocation}
-                disabled={locLoading}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold shadow-sm transition disabled:opacity-50 ${
-                  hasPermission && !isManuallySet
-                    ? 'bg-brand-50 dark:bg-brand-900/30 border border-brand-200 dark:border-brand-800 text-brand-700 dark:text-brand-300'
-                    : denied
-                    ? 'bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300'
-                    : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800'
-                }`}
-              >
-                {locLoading ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : hasPermission ? (
-                  <Crosshair className="w-4 h-4 text-brand-600" />
-                ) : (
-                  <Navigation className="w-4 h-4" />
-                )}
-                GPS
-              </button>
-            </div>
-            {manualMode && (
-              <p className="text-[11px] text-blue-500 dark:text-blue-400 font-semibold">Clique no mapa para definir a sua posição</p>
-            )}
-            {locError && !hasPermission && !manualMode && (
-              <p className="text-[11px] text-rose-500 dark:text-rose-400 max-w-[280px] text-right">{locError}</p>
-            )}
+      <div className="mb-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white">{t('map_title')}</h1>
+            <p className="mt-1 text-slate-600 dark:text-slate-300">{t('map_subtitle')}</p>
           </div>
         </div>
+
+        {/* Location controls */}
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-3 flex flex-col sm:flex-row gap-2">
+          <div className="flex-1">
+            <AddressSearch
+              onSelectLocation={handleSetManualLocation}
+              placeholder="Onde está? Pesquise rua, bairro, zona..."
+            />
+          </div>
+          <div className="flex gap-2 shrink-0">
+            <button
+              onClick={() => setManualMode(!manualMode)}
+              className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition ${
+                manualMode
+                  ? 'bg-blue-500 text-white shadow-md shadow-blue-500/30'
+                  : isManuallySet
+                  ? 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300'
+                  : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+              }`}
+              title="Clicar no mapa para definir posição"
+            >
+              <MousePointer2 className="w-4 h-4" />
+              <span className="hidden sm:inline">{manualMode ? 'Clique no mapa...' : 'Marcar'}</span>
+            </button>
+            <button
+              onClick={() => { requestLocation(); setManualLocation(null) }}
+              disabled={locLoading}
+              className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition disabled:opacity-50 ${
+                hasPermission && !isManuallySet
+                  ? 'bg-brand-50 dark:bg-brand-900/30 border border-brand-200 dark:border-brand-800 text-brand-700 dark:text-brand-300'
+                  : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+              }`}
+              title="Usar localização GPS"
+            >
+              {locLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Crosshair className="w-4 h-4" />}
+              <span className="hidden sm:inline">GPS</span>
+            </button>
+          </div>
+        </div>
+        {manualMode && (
+          <p className="text-xs text-blue-500 dark:text-blue-400 font-semibold mt-2 ml-1">Clique no mapa para definir a sua posição</p>
+        )}
       </div>
 
       <div className="grid lg:grid-cols-3 gap-6">
