@@ -57,6 +57,12 @@ input:focus, select:focus, textarea:focus, button:focus-visible {
   }
 }
 
+/* Map marker pulse animation */
+@keyframes pulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 6px 24px rgba(16,185,129,0.7); }
+  50% { transform: scale(1.08); box-shadow: 0 8px 32px rgba(16,185,129,0.9); }
+}
+
 /* Remove number input spinners */
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
