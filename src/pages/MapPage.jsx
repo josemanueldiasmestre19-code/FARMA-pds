@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { MapPin, Star, Clock, Navigation, Crosshair, Loader2 } from 'lucide-react'
+import { MapPin, Star, Clock, Navigation, Crosshair, Loader2, MousePointer2 } from 'lucide-react'
 import PharmacyMap from '../components/PharmacyMap.jsx'
 import { useData } from '../context/DataContext.jsx'
 import { useI18n } from '../context/I18nContext.jsx'
@@ -24,6 +24,8 @@ export default function MapPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const [selectedId, setSelectedId] = useState(null)
   const [sortBy, setSortBy] = useState('distance')
+  const [manualMode, setManualMode] = useState(false)
+  const [manualLocation, setManualLocation] = useState(null)
 
   // Auto-select pharmacy from URL ?route=id
   useEffect(() => {
@@ -38,11 +40,19 @@ export default function MapPage() {
     }
   }, [searchParams, pharmacies, setSearchParams, requestLocation])
 
+  const activeLocation = manualLocation || userLocation
+  const isManuallySet = !!manualLocation
+
+  const handleSetManualLocation = (coords) => {
+    setManualLocation(coords)
+    setManualMode(false)
+  }
+
   const sortedPharmacies = useMemo(() => {
     return pharmacies
       .map((p) => ({
         ...p,
-        dist: userLocation ? distanceKm(userLocation, p.coords) : null,
+        dist: activeLocation ? distanceKm(activeLocation, p.coords) : null,
         availableCount: Object.values(p.stock).filter((s) => s.available).length,
       }))
       .sort((a, b) => {
@@ -67,30 +77,46 @@ export default function MapPage() {
         </div>
         <div className="flex items-center gap-2">
           <div className="flex flex-col items-end gap-1">
-            <button
-              onClick={requestLocation}
-              disabled={locLoading}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold shadow-sm transition disabled:opacity-50 ${
-                hasPermission
-                  ? 'bg-brand-50 dark:bg-brand-900/30 border border-brand-200 dark:border-brand-800 text-brand-700 dark:text-brand-300'
-                  : denied
-                  ? 'bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300'
-                  : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800'
-              }`}
-            >
-              {locLoading ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : hasPermission ? (
-                <Crosshair className="w-4 h-4 text-brand-600" />
-              ) : denied ? (
-                <Navigation className="w-4 h-4 text-rose-500" />
-              ) : (
-                <Navigation className="w-4 h-4" />
-              )}
-              {hasPermission ? 'Localizado' : denied ? 'Permissão negada' : 'Usar minha localização'}
-            </button>
-            {locError && !hasPermission && (
-              <p className="text-[11px] text-rose-500 dark:text-rose-400 max-w-[250px] text-right">{locError}</p>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setManualMode(!manualMode)}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold shadow-sm transition ${
+                  manualMode
+                    ? 'bg-blue-500 text-white shadow-blue-500/30'
+                    : isManuallySet
+                    ? 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300'
+                    : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800'
+                }`}
+              >
+                <MousePointer2 className="w-4 h-4" />
+                {manualMode ? 'Clique no mapa...' : isManuallySet ? 'Posição definida' : 'Marcar no mapa'}
+              </button>
+              <button
+                onClick={requestLocation}
+                disabled={locLoading}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold shadow-sm transition disabled:opacity-50 ${
+                  hasPermission && !isManuallySet
+                    ? 'bg-brand-50 dark:bg-brand-900/30 border border-brand-200 dark:border-brand-800 text-brand-700 dark:text-brand-300'
+                    : denied
+                    ? 'bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300'
+                    : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800'
+                }`}
+              >
+                {locLoading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : hasPermission ? (
+                  <Crosshair className="w-4 h-4 text-brand-600" />
+                ) : (
+                  <Navigation className="w-4 h-4" />
+                )}
+                GPS
+              </button>
+            </div>
+            {manualMode && (
+              <p className="text-[11px] text-blue-500 dark:text-blue-400 font-semibold">Clique no mapa para definir a sua posição</p>
+            )}
+            {locError && !hasPermission && !manualMode && (
+              <p className="text-[11px] text-rose-500 dark:text-rose-400 max-w-[280px] text-right">{locError}</p>
             )}
           </div>
         </div>
@@ -100,10 +126,12 @@ export default function MapPage() {
         {/* Map */}
         <div className="lg:col-span-2 h-[500px] sm:h-[600px]">
           <PharmacyMap
-            userLocation={userLocation}
+            userLocation={activeLocation}
             selectedPharmacyId={selectedId}
             onSelectPharmacy={handleSelect}
             showRoute={!!selectedId}
+            onSetUserLocation={handleSetManualLocation}
+            manualMode={manualMode}
           />
         </div>
 

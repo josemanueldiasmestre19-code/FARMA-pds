@@ -1,4 +1,4 @@
-import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
 import { Link } from 'react-router-dom'
 import { useData } from '../context/DataContext.jsx'
@@ -67,13 +67,25 @@ function distanceKm(a, b) {
   return R * 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x))
 }
 
+function ClickToSetLocation({ onSetLocation, enabled }) {
+  useMapEvents({
+    click(e) {
+      if (enabled) {
+        onSetLocation([e.latlng.lat, e.latlng.lng])
+      }
+    },
+  })
+  return null
+}
+
 export default function PharmacyMap({
   height = '100%',
   userLocation,
   selectedPharmacyId = null,
   onSelectPharmacy = null,
   showRoute = false,
-  onRequestLocation = null,
+  onSetUserLocation = null,
+  manualMode = false,
 }) {
   const { pharmacies, medicines } = useData()
   const { t } = useI18n()
@@ -172,6 +184,7 @@ export default function PharmacyMap({
 
         {flyTarget && <FlyToLocation position={flyTarget} zoom={16} />}
         {routeBounds && <FitBounds bounds={routeBounds} />}
+        <ClickToSetLocation onSetLocation={onSetUserLocation} enabled={manualMode} />
 
         {/* User */}
         {userLocation && (
