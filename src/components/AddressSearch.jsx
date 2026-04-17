@@ -31,17 +31,31 @@ export default function AddressSearch({ onSelectLocation, placeholder = 'Pesquis
     timeoutRef.current = setTimeout(async () => {
       setLoading(true)
       try {
-        const res = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query + ', Maputo, Mozambique')}&limit=5&addressdetails=1&viewbox=32.40,−25.90,32.65,−26.00&bounded=0`
-        )
+        const searchQuery = query.trim()
+        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery + ', Maputo, Moçambique')}&limit=6&addressdetails=1&viewbox=32.40,-26.05,32.65,-25.90&bounded=1&accept-language=pt`
+        const res = await fetch(url, {
+          headers: { 'User-Agent': 'Vonamed/1.0' }
+        })
         const data = await res.json()
-        setResults(data)
-        setOpen(data.length > 0)
+
+        // Se não houver resultados com bounded, tenta sem
+        if (data.length === 0) {
+          const fallbackUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery + ', Maputo')}&limit=6&addressdetails=1&accept-language=pt`
+          const fallbackRes = await fetch(fallbackUrl, {
+            headers: { 'User-Agent': 'Vonamed/1.0' }
+          })
+          const fallbackData = await fallbackRes.json()
+          setResults(fallbackData)
+          setOpen(fallbackData.length > 0)
+        } else {
+          setResults(data)
+          setOpen(data.length > 0)
+        }
       } catch {
         setResults([])
       }
       setLoading(false)
-    }, 400)
+    }, 500)
 
     return () => clearTimeout(timeoutRef.current)
   }, [query])
