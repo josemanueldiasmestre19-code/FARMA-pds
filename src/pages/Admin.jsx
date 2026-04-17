@@ -6,20 +6,22 @@ import Button from '../components/ui/Button.jsx'
 import Modal from '../components/ui/Modal.jsx'
 import { supabase } from '../lib/supabase.js'
 import { useData } from '../context/DataContext.jsx'
-
-const TABS = [
-  { id: 'medicines', label: 'Medicamentos', icon: Pill },
-  { id: 'pharmacies', label: 'Farmácias', icon: Store },
-]
+import { useI18n } from '../context/I18nContext.jsx'
 
 const emptyMedicine = { name: '', category: '', price: '' }
 const emptyPharmacy = { name: '', address: '', phone: '', hours: '', lat: '', lng: '' }
 
 export default function Admin() {
   const { medicines, pharmacies } = useData()
+  const { t } = useI18n()
   const [tab, setTab] = useState('medicines')
   const [modal, setModal] = useState(null) // { type, item }
   const [saving, setSaving] = useState(false)
+
+  const TABS = [
+    { id: 'medicines', label: t('admin_medicines'), icon: Pill },
+    { id: 'pharmacies', label: t('admin_pharmacies'), icon: Store },
+  ]
 
   const openCreate = (type) =>
     setModal({ type, item: type === 'medicines' ? { ...emptyMedicine } : { ...emptyPharmacy } })
@@ -55,19 +57,19 @@ export default function Admin() {
       toast.error(error.message)
       return
     }
-    toast.success(isNew ? 'Criado com sucesso!' : 'Actualizado!')
+    toast.success(isNew ? t('admin_created') : t('admin_updated'))
     close()
     window.location.reload() // recarrega dados do DataContext
   }
 
   const remove = async (type, id, name) => {
-    if (!confirm(`Apagar "${name}"? Esta acção é irreversível.`)) return
+    if (!confirm(t('admin_delete_confirm').replace('{name}', name))) return
     const { error } = await supabase.from(type).delete().eq('id', id)
     if (error) {
       toast.error(error.message)
       return
     }
-    toast.success('Removido!')
+    toast.success(t('admin_removed'))
     window.location.reload()
   }
 
@@ -82,8 +84,8 @@ export default function Admin() {
           <Shield className="w-6 h-6 text-white" />
         </div>
         <div>
-          <div className="text-xs uppercase tracking-wider text-brand-600 dark:text-brand-400 font-semibold">Painel Administrativo</div>
-          <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white">Gestão</h1>
+          <div className="text-xs uppercase tracking-wider text-brand-600 dark:text-brand-400 font-semibold">{t('admin_panel')}</div>
+          <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white">{t('admin_title')}</h1>
         </div>
       </div>
 
@@ -115,7 +117,7 @@ export default function Admin() {
       <div className="flex items-center justify-between mb-4">
         <h2 className="font-bold text-slate-900 dark:text-white">{tabCfg.label}</h2>
         <Button onClick={() => openCreate(tab)}>
-          <Plus className="w-4 h-4" /> Novo
+          <Plus className="w-4 h-4" /> {t('admin_new')}
         </Button>
       </div>
 
@@ -152,39 +154,39 @@ export default function Admin() {
         </AnimatePresence>
         {items.length === 0 && (
           <div className="p-8 text-center text-sm text-slate-500 dark:text-slate-400">
-            Nada por aqui ainda.
+            {t('admin_empty')}
           </div>
         )}
       </div>
 
       {/* Modal */}
-      <Modal open={!!modal} onClose={close} title={modal?.item?.id ? 'Editar' : 'Criar novo'}>
+      <Modal open={!!modal} onClose={close} title={modal?.item?.id ? t('admin_edit') : t('admin_create_new')}>
         {modal && (
           <form onSubmit={save} className="space-y-3">
             {modal.type === 'medicines' ? (
               <>
-                <Field label="Nome" value={modal.item.name} onChange={(v) => setModal({ ...modal, item: { ...modal.item, name: v } })} required />
-                <Field label="Categoria" value={modal.item.category} onChange={(v) => setModal({ ...modal, item: { ...modal.item, category: v } })} required />
-                <Field label="Preço (MT)" type="number" value={modal.item.price} onChange={(v) => setModal({ ...modal, item: { ...modal.item, price: v } })} required />
+                <Field label={t('admin_name')} value={modal.item.name} onChange={(v) => setModal({ ...modal, item: { ...modal.item, name: v } })} required />
+                <Field label={t('admin_category')} value={modal.item.category} onChange={(v) => setModal({ ...modal, item: { ...modal.item, category: v } })} required />
+                <Field label={t('admin_price')} type="number" value={modal.item.price} onChange={(v) => setModal({ ...modal, item: { ...modal.item, price: v } })} required />
               </>
             ) : (
               <>
-                <Field label="Nome" value={modal.item.name} onChange={(v) => setModal({ ...modal, item: { ...modal.item, name: v } })} required />
-                <Field label="Morada" value={modal.item.address} onChange={(v) => setModal({ ...modal, item: { ...modal.item, address: v } })} required />
-                <Field label="Telefone" value={modal.item.phone} onChange={(v) => setModal({ ...modal, item: { ...modal.item, phone: v } })} required />
-                <Field label="Horário" value={modal.item.hours} onChange={(v) => setModal({ ...modal, item: { ...modal.item, hours: v } })} required />
+                <Field label={t('admin_name')} value={modal.item.name} onChange={(v) => setModal({ ...modal, item: { ...modal.item, name: v } })} required />
+                <Field label={t('admin_address')} value={modal.item.address} onChange={(v) => setModal({ ...modal, item: { ...modal.item, address: v } })} required />
+                <Field label={t('admin_phone')} value={modal.item.phone} onChange={(v) => setModal({ ...modal, item: { ...modal.item, phone: v } })} required />
+                <Field label={t('admin_hours')} value={modal.item.hours} onChange={(v) => setModal({ ...modal, item: { ...modal.item, hours: v } })} required />
                 <div className="grid grid-cols-2 gap-3">
-                  <Field label="Latitude" type="number" step="0.0001" value={modal.item.lat} onChange={(v) => setModal({ ...modal, item: { ...modal.item, lat: v } })} required />
-                  <Field label="Longitude" type="number" step="0.0001" value={modal.item.lng} onChange={(v) => setModal({ ...modal, item: { ...modal.item, lng: v } })} required />
+                  <Field label={t('admin_latitude')} type="number" step="0.0001" value={modal.item.lat} onChange={(v) => setModal({ ...modal, item: { ...modal.item, lat: v } })} required />
+                  <Field label={t('admin_longitude')} type="number" step="0.0001" value={modal.item.lng} onChange={(v) => setModal({ ...modal, item: { ...modal.item, lng: v } })} required />
                 </div>
               </>
             )}
             <div className="flex gap-2 pt-2">
               <Button type="button" variant="secondary" onClick={close} className="flex-1">
-                <X className="w-4 h-4" /> Cancelar
+                <X className="w-4 h-4" /> {t('common_cancel')}
               </Button>
               <Button type="submit" disabled={saving} className="flex-1">
-                <Save className="w-4 h-4" /> {saving ? 'A guardar...' : 'Guardar'}
+                <Save className="w-4 h-4" /> {saving ? t('admin_saving') : t('admin_save')}
               </Button>
             </div>
           </form>

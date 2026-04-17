@@ -39,7 +39,7 @@ export default function Navbar() {
     await logout()
     setMenuOpen(false)
     setOpen(false)
-    toast.success('Sessão terminada')
+    toast.success(t('auth_session_ended'))
     navigate('/')
   }
 
@@ -58,8 +58,9 @@ export default function Navbar() {
       onClick={toggleLang}
       className={`px-2.5 py-2 rounded-lg text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition uppercase ${className}`}
       aria-label="Toggle language"
+      title={lang === 'pt' ? 'Mudar para English' : 'Switch to Português'}
     >
-      {lang === 'pt' ? 'EN' : 'PT'}
+      {lang.toUpperCase()}
     </button>
   )
 
@@ -131,7 +132,7 @@ export default function Navbar() {
                     </Link>
                     {isAdmin && (
                       <Link to="/admin" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-4 py-2.5 text-sm text-brand-700 dark:text-brand-300 hover:bg-brand-50 dark:hover:bg-brand-900/20 transition">
-                        <Shield className="w-4 h-4" /> Admin
+                        <Shield className="w-4 h-4" /> {t('nav_admin')}
                       </Link>
                     )}
                     <button onClick={handleLogout} className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition">
@@ -212,7 +213,7 @@ export default function Navbar() {
                     </Link>
                     {isAdmin && (
                       <Link to="/admin" onClick={() => setOpen(false)} className="flex items-center gap-2 px-3 py-2.5 text-sm font-medium text-brand-700 dark:text-brand-300 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded-lg transition">
-                        <Shield className="w-4 h-4" /> Admin
+                        <Shield className="w-4 h-4" /> {t('nav_admin')}
                       </Link>
                     )}
                     <button onClick={handleLogout} className="w-full text-left flex items-center gap-2 px-3 py-2.5 text-sm font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-lg transition">

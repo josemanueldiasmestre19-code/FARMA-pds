@@ -14,7 +14,7 @@ export default function LoadingScreen() {
       <div className="font-extrabold text-slate-900 dark:text-white text-xl">
         Vona<span className="text-brand-600 dark:text-brand-400">med</span>
       </div>
-      <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">A carregar...</p>
+      <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">Loading...</p>
     </div>
   )
 }

@@ -5,10 +5,12 @@ import { User, Mail, Lock, Save, Eye, EyeOff, Calendar, ShoppingBag } from 'luci
 import Button from '../components/ui/Button.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useReservations } from '../context/ReservationsContext.jsx'
+import { useI18n } from '../context/I18nContext.jsx'
 
 export default function Profile() {
   const { user, updateProfile, updatePassword } = useAuth()
   const { reservations } = useReservations()
+  const { t } = useI18n()
   const [loading, setLoading] = useState(false)
   const [loadingPass, setLoadingPass] = useState(false)
   const [showPass, setShowPass] = useState(false)
@@ -24,25 +26,25 @@ export default function Profile() {
     setLoading(true)
     const res = await updateProfile(form)
     setLoading(false)
-    if (res.ok) toast.success('Perfil actualizado!')
+    if (res.ok) toast.success(t('profile_updated'))
     else toast.error(res.error)
   }
 
   const submitPassword = async (e) => {
     e.preventDefault()
     if (passForm.newPassword !== passForm.confirm) {
-      toast.error('As palavras-passe não coincidem')
+      toast.error(t('profile_pass_no_match'))
       return
     }
     if (passForm.newPassword.length < 6) {
-      toast.error('A palavra-passe deve ter pelo menos 6 caracteres')
+      toast.error(t('profile_pass_min'))
       return
     }
     setLoadingPass(true)
     const res = await updatePassword(passForm.newPassword)
     setLoadingPass(false)
     if (res.ok) {
-      toast.success('Palavra-passe actualizada!')
+      toast.success(t('profile_pass_updated'))
       setPassForm({ newPassword: '', confirm: '' })
     } else toast.error(res.error)
   }
@@ -67,10 +69,10 @@ export default function Profile() {
               <p className="text-brand-50 text-sm mt-1">{user?.email}</p>
               <div className="mt-3 flex flex-wrap items-center justify-center sm:justify-start gap-3 text-xs">
                 <div className="flex items-center gap-1.5 bg-white/10 backdrop-blur px-3 py-1.5 rounded-full">
-                  <Calendar className="w-3.5 h-3.5" /> Desde {memberSince}
+                  <Calendar className="w-3.5 h-3.5" /> {t('profile_since')} {memberSince}
                 </div>
                 <div className="flex items-center gap-1.5 bg-white/10 backdrop-blur px-3 py-1.5 rounded-full">
-                  <ShoppingBag className="w-3.5 h-3.5" /> {reservations.length} {reservations.length === 1 ? 'reserva' : 'reservas'}
+                  <ShoppingBag className="w-3.5 h-3.5" /> {reservations.length} {reservations.length === 1 ? t('profile_reservation') : t('profile_reservations')}
                 </div>
               </div>
             </div>
@@ -80,12 +82,12 @@ export default function Profile() {
         <div className="grid md:grid-cols-2 gap-6">
           {/* Informação pessoal */}
           <form onSubmit={submitProfile} className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6">
-            <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-1">Informação pessoal</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">Actualize os seus dados</p>
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-1">{t('profile_personal_info')}</h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">{t('profile_update_data')}</p>
 
             <div className="space-y-4">
               <div>
-                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Nome completo</label>
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">{t('auth_full_name')}</label>
                 <div className="mt-1 flex items-center bg-slate-50 dark:bg-slate-800 rounded-xl px-4 focus-within:ring-2 focus-within:ring-brand-300 transition">
                   <User className="w-4 h-4 text-slate-400 shrink-0" />
                   <input
@@ -97,7 +99,7 @@ export default function Profile() {
                 </div>
               </div>
               <div>
-                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Email</label>
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">{t('auth_email')}</label>
                 <div className="mt-1 flex items-center bg-slate-50 dark:bg-slate-800 rounded-xl px-4 focus-within:ring-2 focus-within:ring-brand-300 transition">
                   <Mail className="w-4 h-4 text-slate-400 shrink-0" />
                   <input
@@ -109,23 +111,23 @@ export default function Profile() {
                   />
                 </div>
                 <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1 pl-1">
-                  Alterar o email pode exigir nova confirmação
+                  {t('profile_email_note')}
                 </p>
               </div>
               <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? 'A guardar...' : (<><Save className="w-4 h-4" /> Guardar alterações</>)}
+                {loading ? t('profile_saving') : (<><Save className="w-4 h-4" /> {t('common_save')}</>)}
               </Button>
             </div>
           </form>
 
           {/* Alterar palavra-passe */}
           <form onSubmit={submitPassword} className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6">
-            <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-1">Palavra-passe</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">Mantenha a sua conta segura</p>
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-1">{t('profile_password')}</h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">{t('profile_keep_secure')}</p>
 
             <div className="space-y-4">
               <div>
-                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Nova palavra-passe</label>
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">{t('profile_new_password')}</label>
                 <div className="mt-1 flex items-center bg-slate-50 dark:bg-slate-800 rounded-xl px-4 focus-within:ring-2 focus-within:ring-brand-300 transition">
                   <Lock className="w-4 h-4 text-slate-400 shrink-0" />
                   <input
@@ -134,7 +136,7 @@ export default function Profile() {
                     minLength={6}
                     value={passForm.newPassword}
                     onChange={(e) => setPassForm({ ...passForm, newPassword: e.target.value })}
-                    placeholder="Mínimo 6 caracteres"
+                    placeholder={t('auth_min_6')}
                     className="flex-1 py-3 px-3 bg-transparent outline-none text-sm text-slate-900 dark:text-slate-100"
                   />
                   <button type="button" onClick={() => setShowPass(!showPass)} className="p-1 text-slate-400 hover:text-slate-600">
@@ -143,7 +145,7 @@ export default function Profile() {
                 </div>
               </div>
               <div>
-                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Confirmar palavra-passe</label>
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">{t('profile_confirm_password')}</label>
                 <div className="mt-1 flex items-center bg-slate-50 dark:bg-slate-800 rounded-xl px-4 focus-within:ring-2 focus-within:ring-brand-300 transition">
                   <Lock className="w-4 h-4 text-slate-400 shrink-0" />
                   <input
@@ -152,13 +154,13 @@ export default function Profile() {
                     minLength={6}
                     value={passForm.confirm}
                     onChange={(e) => setPassForm({ ...passForm, confirm: e.target.value })}
-                    placeholder="Repita a palavra-passe"
+                    placeholder={t('profile_repeat_password')}
                     className="flex-1 py-3 px-3 bg-transparent outline-none text-sm text-slate-900 dark:text-slate-100"
                   />
                 </div>
               </div>
               <Button type="submit" className="w-full" disabled={loadingPass}>
-                {loadingPass ? 'A actualizar...' : (<><Save className="w-4 h-4" /> Alterar palavra-passe</>)}
+                {loadingPass ? t('profile_updating') : (<><Save className="w-4 h-4" /> {t('profile_change_password')}</>)}
               </Button>
             </div>
           </form>

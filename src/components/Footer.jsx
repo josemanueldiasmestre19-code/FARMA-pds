@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom'
 import { Pill, Heart, Mail, Phone, MapPin } from 'lucide-react'
+import { useI18n } from '../context/I18nContext.jsx'
 
 export default function Footer() {
+  const { t } = useI18n()
   return (
     <footer className="bg-slate-900 dark:bg-slate-950 text-slate-300 mt-16 border-t border-slate-800 dark:border-slate-800">
       <div className="max-w-7xl mx-auto px-6 py-12 grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -13,29 +15,28 @@ export default function Footer() {
             <span className="font-extrabold text-white text-lg">Vonamed</span>
           </div>
           <p className="text-sm text-slate-400 leading-relaxed">
-            A plataforma digital que liga os moçambicanos aos medicamentos disponíveis nas
-            farmácias de Maputo, em tempo real.
+            {t('footer_tagline')}
           </p>
         </div>
         <div>
-          <h4 className="text-white font-semibold mb-3">Plataforma</h4>
+          <h4 className="text-white font-semibold mb-3">{t('footer_platform')}</h4>
           <ul className="space-y-2 text-sm">
-            <li><Link to="/pesquisa" className="hover:text-white transition">Pesquisa de medicamentos</Link></li>
-            <li><Link to="/mapa" className="hover:text-white transition">Mapa de farmácias</Link></li>
-            <li><Link to="/reservas" className="hover:text-white transition">Reservas online</Link></li>
-            <li><Link to="/dashboard" className="hover:text-white transition">Dashboard para farmácias</Link></li>
+            <li><Link to="/pesquisa" className="hover:text-white transition">{t('nav_search')}</Link></li>
+            <li><Link to="/mapa" className="hover:text-white transition">{t('nav_map')}</Link></li>
+            <li><Link to="/reservas" className="hover:text-white transition">{t('nav_reservations')}</Link></li>
+            <li><Link to="/dashboard" className="hover:text-white transition">{t('nav_dashboard')}</Link></li>
           </ul>
         </div>
         <div>
-          <h4 className="text-white font-semibold mb-3">Conta</h4>
+          <h4 className="text-white font-semibold mb-3">{t('footer_account')}</h4>
           <ul className="space-y-2 text-sm">
-            <li><Link to="/login" className="hover:text-white transition">Iniciar sessão</Link></li>
-            <li><Link to="/registo" className="hover:text-white transition">Criar conta</Link></li>
-            <li><Link to="/reservas" className="hover:text-white transition">Minhas reservas</Link></li>
+            <li><Link to="/login" className="hover:text-white transition">{t('auth_signin_link')}</Link></li>
+            <li><Link to="/registo" className="hover:text-white transition">{t('auth_create_account')}</Link></li>
+            <li><Link to="/reservas" className="hover:text-white transition">{t('nav_reservations')}</Link></li>
           </ul>
         </div>
         <div>
-          <h4 className="text-white font-semibold mb-3">Contacto</h4>
+          <h4 className="text-white font-semibold mb-3">{t('footer_contact')}</h4>
           <ul className="space-y-2 text-sm">
             <li className="flex items-center gap-2">
               <MapPin className="w-3.5 h-3.5 text-brand-400 shrink-0" />
@@ -53,7 +54,7 @@ export default function Footer() {
         </div>
       </div>
       <div className="border-t border-slate-800 py-5 text-center text-xs text-slate-500">
-        Feito com <Heart className="inline w-3 h-3 text-brand-500" /> em Maputo — Projecto Académico © 2026
+        {t('footer_made_with')} <Heart className="inline w-3 h-3 text-brand-500" /> {t('footer_in_maputo')}
       </div>
     </footer>
   )

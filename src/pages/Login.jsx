@@ -5,9 +5,11 @@ import toast from 'react-hot-toast'
 import { Mail, Lock, Pill, ArrowRight, Eye, EyeOff } from 'lucide-react'
 import Button from '../components/ui/Button.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
+import { useI18n } from '../context/I18nContext.jsx'
 
 export default function Login() {
   const { login } = useAuth()
+  const { t } = useI18n()
   const navigate = useNavigate()
   const location = useLocation()
   const redirectTo = location.state?.from || '/'
@@ -21,7 +23,7 @@ export default function Login() {
     const res = await login(form)
     setLoading(false)
     if (res.ok) {
-      toast.success('Sessão iniciada!')
+      toast.success(t('auth_session_started'))
       navigate(redirectTo, { replace: true })
     } else {
       toast.error(res.error)
@@ -39,13 +41,13 @@ export default function Login() {
           <div className="inline-flex w-14 h-14 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 items-center justify-center shadow-lg shadow-brand-500/30 mb-4">
             <Pill className="w-7 h-7 text-white" />
           </div>
-          <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white">Bem-vindo de volta</h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-1">Inicie sessão na sua conta</p>
+          <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white">{t('auth_welcome_back')}</h1>
+          <p className="text-slate-500 dark:text-slate-400 mt-1">{t('auth_signin_your_account')}</p>
         </div>
 
         <form onSubmit={submit} className="bg-white dark:bg-slate-900 rounded-3xl shadow-xl border border-slate-200 dark:border-slate-800 p-6 space-y-4">
           <div>
-            <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Email</label>
+            <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">{t('auth_email')}</label>
             <div className="mt-1 flex items-center bg-slate-50 dark:bg-slate-800 rounded-xl px-4 focus-within:ring-2 focus-within:ring-brand-300 transition">
               <Mail className="w-4 h-4 text-slate-400 shrink-0" />
               <input
@@ -59,7 +61,7 @@ export default function Login() {
             </div>
           </div>
           <div>
-            <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Palavra-passe</label>
+            <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">{t('auth_password')}</label>
             <div className="mt-1 flex items-center bg-slate-50 dark:bg-slate-800 rounded-xl px-4 focus-within:ring-2 focus-within:ring-brand-300 transition">
               <Lock className="w-4 h-4 text-slate-400 shrink-0" />
               <input
@@ -76,13 +78,13 @@ export default function Login() {
             </div>
           </div>
           <Button type="submit" className="w-full" size="lg" disabled={loading}>
-            {loading ? 'A entrar...' : (<>Entrar <ArrowRight className="w-4 h-4" /></>)}
+            {loading ? t('auth_signin_loading') : (<>{t('auth_signin')} <ArrowRight className="w-4 h-4" /></>)}
           </Button>
         </form>
 
         <p className="text-center text-sm text-slate-500 dark:text-slate-400 mt-6">
-          Ainda não tem conta?{' '}
-          <Link to="/registo" className="text-brand-700 font-semibold hover:underline">Registar</Link>
+          {t('auth_no_account')}{' '}
+          <Link to="/registo" className="text-brand-700 font-semibold hover:underline">{t('auth_register_link')}</Link>
         </p>
       </motion.div>
     </div>

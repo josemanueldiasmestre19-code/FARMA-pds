@@ -2,15 +2,17 @@ import PharmacyMap from '../components/PharmacyMap.jsx'
 import { Link } from 'react-router-dom'
 import { MapPin, Star, Clock } from 'lucide-react'
 import { useData } from '../context/DataContext.jsx'
+import { useI18n } from '../context/I18nContext.jsx'
 
 export default function MapPage() {
   const { pharmacies, medicines } = useData()
+  const { t } = useI18n()
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-10">
       <div className="mb-6">
-        <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white">Mapa de Farmácias</h1>
-        <p className="mt-2 text-slate-600 dark:text-slate-300">Explore todas as farmácias parceiras em Maputo</p>
+        <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white">{t('map_title')}</h1>
+        <p className="mt-2 text-slate-600 dark:text-slate-300">{t('map_subtitle')}</p>
       </div>
 
       <div className="grid lg:grid-cols-3 gap-6">
@@ -40,7 +42,7 @@ export default function MapPage() {
                   <Clock className="w-3 h-3" /> {p.hours}
                 </div>
                 <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                  <span className="text-xs text-slate-500 dark:text-slate-400">Em stock</span>
+                  <span className="text-xs text-slate-500 dark:text-slate-400">{t('map_in_stock')}</span>
                   <span className="text-sm font-bold text-brand-700">
                     {available}/{medicines.length}
                   </span>

@@ -1,9 +1,11 @@
 import { MapPin, CheckCircle2, XCircle, ShoppingBag } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { useI18n } from '../context/I18nContext.jsx'
 
 export default function MedicineCard({ medicine, pharmacy, distance, stock, onReserve }) {
   const available = stock?.available
+  const { t } = useI18n()
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -18,11 +20,11 @@ export default function MedicineCard({ medicine, pharmacy, distance, stock, onRe
             </span>
             {available ? (
               <span className="flex items-center gap-1 text-xs font-semibold text-emerald-700">
-                <CheckCircle2 className="w-3.5 h-3.5" /> Disponível
+                <CheckCircle2 className="w-3.5 h-3.5" /> {t('common_available')}
               </span>
             ) : (
               <span className="flex items-center gap-1 text-xs font-semibold text-rose-600">
-                <XCircle className="w-3.5 h-3.5" /> Indisponível
+                <XCircle className="w-3.5 h-3.5" /> {t('common_unavailable')}
               </span>
             )}
           </div>
@@ -31,17 +33,17 @@ export default function MedicineCard({ medicine, pharmacy, distance, stock, onRe
             <MapPin className="w-3.5 h-3.5" /> {pharmacy.name}
           </Link>
           <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            {distance.toFixed(1)} km de distância • {pharmacy.hours}
+            {distance.toFixed(1)} {t('common_km_distance')} • {pharmacy.hours}
           </div>
         </div>
         <div className="text-right shrink-0">
-          <div className="text-lg font-extrabold text-slate-900 dark:text-white">{medicine.price} MT</div>
+          <div className="text-lg font-extrabold text-slate-900 dark:text-white">{medicine.price} {t('unit_mt')}</div>
           <button
             disabled={!available}
             onClick={() => onReserve?.(medicine, pharmacy)}
             className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand-600 text-white text-xs font-semibold hover:bg-brand-700 hover:scale-105 active:scale-95 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed disabled:hover:scale-100 transition"
           >
-            <ShoppingBag className="w-3.5 h-3.5" /> Reservar
+            <ShoppingBag className="w-3.5 h-3.5" /> {t('common_reserve')}
           </button>
         </div>
       </div>

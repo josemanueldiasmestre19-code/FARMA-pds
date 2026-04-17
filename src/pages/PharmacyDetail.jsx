@@ -4,18 +4,20 @@ import { MapPin, Phone, Clock, Star, ArrowLeft, CheckCircle2, XCircle, ShoppingB
 import ReserveModal from '../components/ReserveModal.jsx'
 import PharmacyReviews from '../components/PharmacyReviews.jsx'
 import { useData } from '../context/DataContext.jsx'
+import { useI18n } from '../context/I18nContext.jsx'
 
 export default function PharmacyDetail() {
   const { id } = useParams()
   const { pharmacies, medicines } = useData()
+  const { t } = useI18n()
   const pharmacy = pharmacies.find((p) => p.id === Number(id))
   const [reserveMed, setReserveMed] = useState(null)
 
   if (!pharmacy) {
     return (
       <div className="max-w-3xl mx-auto px-6 py-20 text-center">
-        <h2 className="text-2xl font-bold">Farmácia não encontrada</h2>
-        <Link to="/mapa" className="text-brand-600 mt-4 inline-block">Voltar ao mapa</Link>
+        <h2 className="text-2xl font-bold">{t('pharmacy_not_found')}</h2>
+        <Link to="/mapa" className="text-brand-600 mt-4 inline-block">{t('pharmacy_back_to_map')}</Link>
       </div>
     )
   }
@@ -23,7 +25,7 @@ export default function PharmacyDetail() {
   return (
     <div className="max-w-5xl mx-auto px-6 py-10">
       <Link to="/mapa" className="inline-flex items-center gap-1 text-sm text-slate-600 dark:text-slate-300 hover:text-brand-700 dark:hover:text-brand-400 mb-6">
-        <ArrowLeft className="w-4 h-4" /> Voltar
+        <ArrowLeft className="w-4 h-4" /> {t('common_back')}
       </Link>
 
       <div className="bg-gradient-to-br from-brand-600 to-emerald-700 rounded-3xl p-8 md:p-10 text-white shadow-xl">
@@ -48,7 +50,7 @@ export default function PharmacyDetail() {
       </div>
 
       <div className="mt-8">
-        <h2 className="text-xl font-bold text-slate-900 dark:text-white dark:text-white mb-4">Medicamentos disponíveis</h2>
+        <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-4">{t('pharmacy_available_meds')}</h2>
         <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 divide-y divide-slate-100 dark:divide-slate-800">
           {medicines.map((m) => {
             const stock = pharmacy.stock[m.id]
@@ -62,18 +64,18 @@ export default function PharmacyDetail() {
                     </span>
                   </div>
                   <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                    {stock?.available ? `${stock.qty} unidades em stock` : 'Fora de stock'}
+                    {stock?.available ? `${stock.qty} ${t('pharmacy_units_stock')}` : t('pharmacy_out_of_stock')}
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="font-bold text-slate-900 dark:text-white">{m.price} MT</div>
+                  <div className="font-bold text-slate-900 dark:text-white">{m.price} {t('unit_mt')}</div>
                   {stock?.available ? (
                     <div className="text-xs flex items-center gap-1 text-emerald-600 font-semibold justify-end">
-                      <CheckCircle2 className="w-3 h-3" /> Disponível
+                      <CheckCircle2 className="w-3 h-3" /> {t('common_available')}
                     </div>
                   ) : (
                     <div className="text-xs flex items-center gap-1 text-rose-500 font-semibold justify-end">
-                      <XCircle className="w-3 h-3" /> Indisponível
+                      <XCircle className="w-3 h-3" /> {t('common_unavailable')}
                     </div>
                   )}
                 </div>
@@ -82,7 +84,7 @@ export default function PharmacyDetail() {
                   onClick={() => setReserveMed(m)}
                   className="px-4 py-2 rounded-lg bg-brand-600 text-white text-xs font-semibold hover:bg-brand-700 hover:scale-105 active:scale-95 disabled:bg-slate-200 dark:disabled:bg-slate-800 disabled:text-slate-400 dark:disabled:text-slate-600 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center gap-1.5 transition"
                 >
-                  <ShoppingBag className="w-3.5 h-3.5" /> Reservar
+                  <ShoppingBag className="w-3.5 h-3.5" /> {t('common_reserve')}
                 </button>
               </div>
             )

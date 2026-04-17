@@ -4,24 +4,26 @@ import { motion, AnimatePresence } from 'framer-motion'
 import toast from 'react-hot-toast'
 import { Pill, MapPin, Calendar, Trash2, ShoppingBag, CheckCircle2, XCircle, Clock } from 'lucide-react'
 import { useReservations } from '../context/ReservationsContext.jsx'
+import { useI18n } from '../context/I18nContext.jsx'
 import EmptyState from '../components/ui/EmptyState.jsx'
 import Button from '../components/ui/Button.jsx'
 
-const TABS = [
-  { id: 'active', label: 'Activas', status: ['pendente'], icon: Clock, color: 'amber' },
-  { id: 'completed', label: 'Concluídas', status: ['concluida'], icon: CheckCircle2, color: 'emerald' },
-  { id: 'cancelled', label: 'Canceladas', status: ['cancelada'], icon: XCircle, color: 'rose' },
-]
-
-const STATUS_CONFIG = {
-  pendente: { label: 'Pendente', color: 'bg-amber-100 text-amber-700' },
-  concluida: { label: 'Concluída', color: 'bg-emerald-100 text-emerald-700' },
-  cancelada: { label: 'Cancelada', color: 'bg-rose-100 text-rose-700' },
-}
-
 export default function MyReservations() {
   const { reservations, cancelReservation, completeReservation, deleteReservation } = useReservations()
+  const { t } = useI18n()
   const [activeTab, setActiveTab] = useState('active')
+
+  const TABS = [
+    { id: 'active', label: t('reservations_tab_active'), status: ['pendente'], icon: Clock, color: 'amber' },
+    { id: 'completed', label: t('reservations_tab_completed'), status: ['concluida'], icon: CheckCircle2, color: 'emerald' },
+    { id: 'cancelled', label: t('reservations_tab_cancelled'), status: ['cancelada'], icon: XCircle, color: 'rose' },
+  ]
+
+  const STATUS_CONFIG = {
+    pendente: { label: t('status_pending'), color: 'bg-amber-100 text-amber-700' },
+    concluida: { label: t('status_completed'), color: 'bg-emerald-100 text-emerald-700' },
+    cancelada: { label: t('status_cancelled'), color: 'bg-rose-100 text-rose-700' },
+  }
 
   const filtered = useMemo(() => {
     const tab = TABS.find((t) => t.id === activeTab)
@@ -36,24 +38,24 @@ export default function MyReservations() {
 
   const handleCancel = async (id) => {
     await cancelReservation(id)
-    toast.success('Reserva cancelada')
+    toast.success(t('reservations_cancelled_toast'))
   }
 
   const handleComplete = async (id) => {
     await completeReservation(id)
-    toast.success('Reserva marcada como concluída')
+    toast.success(t('reservations_completed_toast'))
   }
 
   const handleDelete = async (id) => {
     await deleteReservation(id)
-    toast.success('Reserva removida do histórico')
+    toast.success(t('reservations_removed_toast'))
   }
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
       <div className="mb-6">
-        <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white dark:text-white">Minhas Reservas</h1>
-        <p className="mt-2 text-slate-600 dark:text-slate-300">Acompanhe o histórico das suas reservas</p>
+        <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white">{t('reservations_title')}</h1>
+        <p className="mt-2 text-slate-600 dark:text-slate-300">{t('reservations_subtitle')}</p>
       </div>
 
       {/* Tabs */}
@@ -88,19 +90,19 @@ export default function MyReservations() {
         <EmptyState
           icon={ShoppingBag}
           title={
-            activeTab === 'active' ? 'Nenhuma reserva activa' :
-            activeTab === 'completed' ? 'Nenhuma reserva concluída' :
-            'Nenhuma reserva cancelada'
+            activeTab === 'active' ? t('reservations_empty_active_title') :
+            activeTab === 'completed' ? t('reservations_empty_completed_title') :
+            t('reservations_empty_cancelled_title')
           }
           description={
             activeTab === 'active'
-              ? 'Pesquise um medicamento e reserve numa farmácia próxima.'
-              : 'O seu histórico aparecerá aqui.'
+              ? t('reservations_empty_active_desc')
+              : t('reservations_empty_history')
           }
           action={
             activeTab === 'active' ? (
               <Link to="/pesquisa">
-                <Button>Pesquisar medicamento</Button>
+                <Button>{t('reservations_search_btn')}</Button>
               </Link>
             ) : null
           }

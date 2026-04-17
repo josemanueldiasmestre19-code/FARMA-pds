@@ -6,9 +6,11 @@ import { Link } from 'react-router-dom'
 import Button from './ui/Button.jsx'
 import { supabase } from '../lib/supabase.js'
 import { useAuth } from '../context/AuthContext.jsx'
+import { useI18n } from '../context/I18nContext.jsx'
 
 export default function PharmacyReviews({ pharmacyId }) {
   const { user } = useAuth()
+  const { t } = useI18n()
   const [reviews, setReviews] = useState([])
   const [loading, setLoading] = useState(true)
   const [rating, setRating] = useState(5)
@@ -78,10 +80,10 @@ export default function PharmacyReviews({ pharmacyId }) {
 
     setSubmitting(false)
     if (error) {
-      toast.error('Erro ao submeter avaliação')
+      toast.error(t('reviews_error'))
       return
     }
-    toast.success(userReview ? 'Avaliação actualizada!' : 'Obrigado pela sua avaliação!')
+    toast.success(userReview ? t('reviews_updated') : t('reviews_submitted'))
   }
 
   const deleteReview = async () => {
@@ -89,7 +91,7 @@ export default function PharmacyReviews({ pharmacyId }) {
     await supabase.from('reviews').delete().eq('id', userReview.id)
     setRating(5)
     setComment('')
-    toast.success('Avaliação removida')
+    toast.success(t('reviews_deleted'))
   }
 
   const avgRating = reviews.length > 0
@@ -105,7 +107,7 @@ export default function PharmacyReviews({ pharmacyId }) {
   return (
     <div className="mt-8">
       <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-4">
-        Avaliações
+        {t('reviews_title')}
         {reviews.length > 0 && (
           <span className="ml-2 text-sm text-slate-500 dark:text-slate-400 font-normal">
             ({reviews.length})
@@ -127,7 +129,7 @@ export default function PharmacyReviews({ pharmacyId }) {
               ))}
             </div>
             <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-              {reviews.length} {reviews.length === 1 ? 'avaliação' : 'avaliações'}
+              {reviews.length} {reviews.length === 1 ? t('reviews_count_one') : t('reviews_count_many')}
             </div>
           </div>
           <div className="flex-1 w-full space-y-1.5">
@@ -152,7 +154,7 @@ export default function PharmacyReviews({ pharmacyId }) {
       {user ? (
         <form onSubmit={submit} className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 mb-4">
           <h3 className="font-bold text-slate-900 dark:text-white text-sm mb-3">
-            {userReview ? 'A sua avaliação' : 'Deixe a sua avaliação'}
+            {userReview ? t('reviews_your_review') : t('reviews_leave_review')}
           </h3>
 
           <div className="flex items-center gap-1 mb-3">
@@ -182,7 +184,7 @@ export default function PharmacyReviews({ pharmacyId }) {
           <textarea
             value={comment}
             onChange={(e) => setComment(e.target.value)}
-            placeholder="Partilhe a sua experiência (opcional)"
+            placeholder={t('reviews_comment_placeholder')}
             rows={3}
             maxLength={500}
             className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-transparent focus:border-brand-300 rounded-xl text-sm outline-none text-slate-900 dark:text-slate-100 resize-none transition"
@@ -194,11 +196,11 @@ export default function PharmacyReviews({ pharmacyId }) {
           <div className="flex gap-2 mt-3">
             <Button type="submit" disabled={submitting} className="flex-1 sm:flex-none">
               <Send className="w-4 h-4" />
-              {submitting ? 'A enviar...' : (userReview ? 'Actualizar' : 'Submeter')}
+              {submitting ? t('reviews_sending') : (userReview ? t('reviews_update') : t('reviews_submit'))}
             </Button>
             {userReview && (
               <Button type="button" variant="danger" size="md" onClick={deleteReview}>
-                <Trash2 className="w-4 h-4" /> Remover
+                <Trash2 className="w-4 h-4" /> {t('reviews_remove')}
               </Button>
             )}
           </div>
@@ -206,10 +208,10 @@ export default function PharmacyReviews({ pharmacyId }) {
       ) : (
         <div className="bg-brand-50 dark:bg-brand-900/20 rounded-2xl border border-brand-200 dark:border-brand-800 p-5 mb-4 text-center">
           <p className="text-sm text-slate-700 dark:text-slate-300 mb-3">
-            Inicie sessão para deixar a sua avaliação
+            {t('reviews_signin_prompt')}
           </p>
           <Link to="/login">
-            <Button size="sm">Iniciar sessão</Button>
+            <Button size="sm">{t('reviews_signin_btn')}</Button>
           </Link>
         </div>
       )}
@@ -217,13 +219,13 @@ export default function PharmacyReviews({ pharmacyId }) {
       {/* Reviews list */}
       {loading ? (
         <div className="text-center py-8 text-sm text-slate-500 dark:text-slate-400">
-          A carregar avaliações...
+          {t('reviews_loading')}
         </div>
       ) : reviews.length === 0 ? (
         <div className="bg-white dark:bg-slate-900 border border-dashed border-slate-300 dark:border-slate-700 rounded-2xl p-8 text-center">
           <MessageSquare className="w-8 h-8 text-slate-400 dark:text-slate-600 mx-auto mb-2" />
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            Ainda não há avaliações. Seja o primeiro!
+            {t('reviews_empty')}
           </p>
         </div>
       ) : (
@@ -249,7 +251,7 @@ export default function PharmacyReviews({ pharmacyId }) {
                       </span>
                       {user && r.user_id === user.id && (
                         <span className="text-[10px] font-semibold text-brand-700 dark:text-brand-300 bg-brand-50 dark:bg-brand-900/30 px-2 py-0.5 rounded-full">
-                          Você
+                          {t('reviews_you')}
                         </span>
                       )}
                     </div>

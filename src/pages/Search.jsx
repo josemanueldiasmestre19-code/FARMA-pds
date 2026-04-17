@@ -8,18 +8,20 @@ import { MedicineCardSkeleton } from '../components/ui/Skeleton.jsx'
 import Button from '../components/ui/Button.jsx'
 import { distanceKm, userLocation } from '../data/mockData.js'
 import { useData } from '../context/DataContext.jsx'
+import { useI18n } from '../context/I18nContext.jsx'
 
 const PAGE_SIZE = 10
 
-const SORT_OPTIONS = [
-  { value: 'distance', label: 'Distância (mais próximo)' },
-  { value: 'price-asc', label: 'Preço (mais barato)' },
-  { value: 'price-desc', label: 'Preço (mais caro)' },
-  { value: 'name', label: 'Nome (A-Z)' },
-]
-
 export default function Search() {
   const { medicines, pharmacies, loading: dataLoading } = useData()
+  const { t } = useI18n()
+
+  const SORT_OPTIONS = [
+    { value: 'distance', label: t('sort_distance') },
+    { value: 'price-asc', label: t('sort_price_asc') },
+    { value: 'price-desc', label: t('sort_price_desc') },
+    { value: 'name', label: t('sort_name') },
+  ]
   const [params, setParams] = useSearchParams()
   const [query, setQuery] = useState(params.get('q') || '')
   const [onlyAvailable, setOnlyAvailable] = useState(false)
@@ -102,8 +104,8 @@ export default function Search() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
       <div className="mb-8">
-        <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white">Pesquisar medicamentos</h1>
-        <p className="mt-2 text-slate-600 dark:text-slate-300">Encontre onde está disponível em Maputo</p>
+        <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white">{t('search_title')}</h1>
+        <p className="mt-2 text-slate-600 dark:text-slate-300">{t('search_subtitle')}</p>
       </div>
 
       {/* Search bar */}
@@ -113,7 +115,7 @@ export default function Search() {
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Nome do medicamento ou categoria..."
+            placeholder={t('search_placeholder')}
             className="flex-1 py-3 px-3 bg-transparent outline-none text-slate-800 dark:text-slate-100 min-w-0"
           />
           {query && (
@@ -128,27 +130,27 @@ export default function Search() {
             onlyAvailable ? 'bg-brand-600 text-white shadow-md shadow-brand-500/30' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700'
           }`}
         >
-          <Filter className="w-4 h-4" /> Só disponíveis
+          <Filter className="w-4 h-4" /> {t('search_only_available')}
         </button>
       </div>
 
       {/* Filtros */}
       <div className="flex flex-wrap gap-3 mb-6">
         <div className="flex items-center gap-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 shadow-sm">
-          <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">Categoria:</label>
+          <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">{t('search_category')}</label>
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
             className="bg-transparent outline-none text-sm font-semibold text-slate-800 dark:text-slate-200 pr-2 cursor-pointer"
           >
-            <option value="">Todas</option>
+            <option value="">{t('search_all')}</option>
             {categories.map((c) => (
               <option key={c} value={c}>{c}</option>
             ))}
           </select>
         </div>
         <div className="flex items-center gap-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 shadow-sm">
-          <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">Ordenar:</label>
+          <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">{t('search_sort')}</label>
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
@@ -164,7 +166,7 @@ export default function Search() {
             onClick={clearFilters}
             className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 rounded-xl transition"
           >
-            <X className="w-3.5 h-3.5" /> Limpar filtros
+            <X className="w-3.5 h-3.5" /> {t('search_clear')}
           </button>
         )}
       </div>
@@ -172,8 +174,8 @@ export default function Search() {
       {/* Result count */}
       <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
         <div className="text-sm text-slate-600 dark:text-slate-300">
-          {isLoading ? 'A pesquisar...' : (
-            <><span className="font-bold text-slate-900 dark:text-white">{results.length}</span> resultados encontrados</>
+          {isLoading ? t('search_loading') : (
+            <><span className="font-bold text-slate-900 dark:text-white">{results.length}</span> {t('search_results')}</>
           )}
         </div>
         <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1">
@@ -189,9 +191,9 @@ export default function Search() {
       ) : results.length === 0 ? (
         <EmptyState
           icon={PackageSearch}
-          title="Nenhum medicamento encontrado"
-          description="Tente outro nome, remova filtros ou escolha outra categoria."
-          action={<Button variant="secondary" onClick={clearFilters}>Limpar filtros</Button>}
+          title={t('search_no_results_title')}
+          description={t('search_no_results_desc')}
+          action={<Button variant="secondary" onClick={clearFilters}>{t('search_clear')}</Button>}
         />
       ) : (
         <>
@@ -213,7 +215,7 @@ export default function Search() {
                 disabled={page === 1}
                 className="px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition"
               >
-                Anterior
+                {t('search_prev')}
               </button>
               <div className="flex items-center gap-1">
                 {Array.from({ length: totalPages }, (_, i) => i + 1)
@@ -237,7 +239,7 @@ export default function Search() {
                 disabled={page === totalPages}
                 className="px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition"
               >
-                Próximo
+                {t('search_next')}
               </button>
             </div>
           )}

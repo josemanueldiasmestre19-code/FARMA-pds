@@ -6,10 +6,12 @@ import Modal from './ui/Modal.jsx'
 import Button from './ui/Button.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useReservations } from '../context/ReservationsContext.jsx'
+import { useI18n } from '../context/I18nContext.jsx'
 
 export default function ReserveModal({ open, onClose, medicine, pharmacy }) {
   const { user } = useAuth()
   const { addReservation } = useReservations()
+  const { t } = useI18n()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [done, setDone] = useState(false)
@@ -29,7 +31,7 @@ export default function ReserveModal({ open, onClose, medicine, pharmacy }) {
     setLoading(false)
     if (res.ok) {
       setDone(true)
-      toast.success('Reserva confirmada com sucesso!')
+      toast.success(t('reserve_success_toast'))
       setTimeout(() => {
         setDone(false)
         onClose()
@@ -48,17 +50,17 @@ export default function ReserveModal({ open, onClose, medicine, pharmacy }) {
   }
 
   return (
-    <Modal open={open} onClose={handleClose} title={done ? null : 'Confirmar reserva'}>
+    <Modal open={open} onClose={handleClose} title={done ? null : t('reserve_confirm_title')}>
       {!user ? (
         <div className="text-center py-4">
           <div className="w-16 h-16 mx-auto rounded-2xl bg-amber-50 flex items-center justify-center mb-3">
             <LogIn className="w-7 h-7 text-amber-600" />
           </div>
-          <h4 className="font-bold text-slate-900 dark:text-white">Inicie sessão para reservar</h4>
-          <p className="text-sm text-slate-500 mt-1">Precisa de uma conta para reservar medicamentos.</p>
+          <h4 className="font-bold text-slate-900 dark:text-white">{t('reserve_signin_needed')}</h4>
+          <p className="text-sm text-slate-500 mt-1">{t('reserve_signin_desc')}</p>
           <div className="flex gap-2 mt-5 justify-center">
-            <Button variant="secondary" onClick={onClose}>Cancelar</Button>
-            <Button onClick={() => { onClose(); navigate('/login') }}>Iniciar sessão</Button>
+            <Button variant="secondary" onClick={onClose}>{t('common_cancel')}</Button>
+            <Button onClick={() => { onClose(); navigate('/login') }}>{t('auth_signin_link')}</Button>
           </div>
         </div>
       ) : done ? (
@@ -66,8 +68,8 @@ export default function ReserveModal({ open, onClose, medicine, pharmacy }) {
           <div className="w-20 h-20 mx-auto rounded-full bg-emerald-100 flex items-center justify-center mb-3 animate-pulse">
             <CheckCircle2 className="w-10 h-10 text-emerald-600" />
           </div>
-          <h4 className="text-xl font-extrabold text-slate-900 dark:text-white">Reserva confirmada!</h4>
-          <p className="text-sm text-slate-500 mt-1">A redirigir para as suas reservas...</p>
+          <h4 className="text-xl font-extrabold text-slate-900 dark:text-white">{t('reserve_confirmed')}</h4>
+          <p className="text-sm text-slate-500 mt-1">{t('reserve_redirecting')}</p>
         </div>
       ) : (
         <>
@@ -77,7 +79,7 @@ export default function ReserveModal({ open, onClose, medicine, pharmacy }) {
                 <Pill className="w-5 h-5 text-brand-700" />
               </div>
               <div className="flex-1">
-                <div className="text-xs text-slate-500 dark:text-slate-400">Medicamento</div>
+                <div className="text-xs text-slate-500 dark:text-slate-400">{t('reserve_medicine')}</div>
                 <div className="font-bold text-slate-900 dark:text-white">{medicine.name}</div>
               </div>
               <div className="font-extrabold text-slate-900 dark:text-white">{medicine.price} MT</div>
@@ -87,21 +89,21 @@ export default function ReserveModal({ open, onClose, medicine, pharmacy }) {
                 <MapPin className="w-5 h-5 text-emerald-700" />
               </div>
               <div className="flex-1">
-                <div className="text-xs text-slate-500 dark:text-slate-400">Farmácia</div>
+                <div className="text-xs text-slate-500 dark:text-slate-400">{t('reserve_pharmacy')}</div>
                 <div className="font-semibold text-slate-900 dark:text-white text-sm">{pharmacy.name}</div>
                 <div className="text-xs text-slate-500 dark:text-slate-400">{pharmacy.address}</div>
               </div>
             </div>
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-4">
-            Ao confirmar, a reserva ficará disponível na farmácia por 24h. Levante directamente no balcão.
+            {t('reserve_note')}
           </p>
           <div className="flex gap-2 mt-5">
             <Button variant="secondary" className="flex-1" onClick={handleClose} disabled={loading}>
-              Cancelar
+              {t('common_cancel')}
             </Button>
             <Button className="flex-1" onClick={handleConfirm} disabled={loading}>
-              {loading ? 'A confirmar...' : 'Confirmar reserva'}
+              {loading ? t('reserve_confirming') : t('reserve_confirm')}
             </Button>
           </div>
         </>

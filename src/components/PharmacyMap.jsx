@@ -3,6 +3,7 @@ import L from 'leaflet'
 import { Link } from 'react-router-dom'
 import { userLocation } from '../data/mockData.js'
 import { useData } from '../context/DataContext.jsx'
+import { useI18n } from '../context/I18nContext.jsx'
 
 // Custom pharmacy icon using divIcon (SVG)
 const pharmacyIcon = L.divIcon({
@@ -14,6 +15,7 @@ const pharmacyIcon = L.divIcon({
 
 export default function PharmacyMap({ height = '100%' }) {
   const { pharmacies, medicines } = useData()
+  const { t } = useI18n()
 
   return (
     <div style={{ height }} className="rounded-2xl overflow-hidden shadow-xl border border-slate-200">
@@ -23,7 +25,7 @@ export default function PharmacyMap({ height = '100%' }) {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         <CircleMarker center={userLocation} radius={8} pathOptions={{ color: '#2563eb', fillColor: '#3b82f6', fillOpacity: 0.7 }}>
-          <Popup>A sua localização</Popup>
+          <Popup>{t('map_user_location')}</Popup>
         </CircleMarker>
         {pharmacies.map((p) => {
           const availableCount = Object.values(p.stock).filter((s) => s.available).length
@@ -34,14 +36,14 @@ export default function PharmacyMap({ height = '100%' }) {
                   <div className="font-bold text-slate-900 text-sm">{p.name}</div>
                   <div className="text-xs text-slate-500 mt-1">{p.address}</div>
                   <div className="text-xs mt-2">
-                    <span className="font-semibold text-brand-700">{availableCount}</span> de{' '}
-                    {medicines.length} medicamentos disponíveis
+                    <span className="font-semibold text-brand-700">{availableCount}</span> {t('common_of')}{' '}
+                    {medicines.length} {t('map_available_of')}
                   </div>
                   <Link
                     to={`/farmacia/${p.id}`}
                     className="mt-3 block text-center px-3 py-1.5 bg-brand-600 text-white rounded-lg text-xs font-semibold hover:bg-brand-700"
                   >
-                    Ver Detalhes
+                    {t('map_see_details')}
                   </Link>
                 </div>
               </Popup>

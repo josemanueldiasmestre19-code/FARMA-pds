@@ -11,6 +11,7 @@ export const translations = {
     nav_reservations: 'Minhas reservas',
     nav_logout: 'Terminar sessão',
     nav_signed_as: 'Sessão iniciada como',
+    nav_admin: 'Admin',
 
     // Home
     home_badge: 'Disponível agora em Maputo',
@@ -37,6 +38,10 @@ export const translations = {
     home_cta_title: 'Pronto para começar?',
     home_cta_text: 'Explore o mapa interactivo e descubra todas as farmácias parceiras em Maputo.',
     home_cta_button: 'Ver mapa interactivo',
+    home_card_searched: 'Pesquisado agora',
+    home_card_verified: 'Verificado',
+    home_card_see_all: 'Ver todos os resultados',
+    home_card_in_stock: 'Em stock',
 
     // Search
     search_title: 'Pesquisar medicamentos',
@@ -62,6 +67,29 @@ export const translations = {
     map_title: 'Mapa de Farmácias',
     map_subtitle: 'Explore todas as farmácias parceiras em Maputo',
     map_in_stock: 'Em stock',
+    map_user_location: 'A sua localização',
+    map_available_of: 'medicamentos disponíveis',
+    map_see_details: 'Ver Detalhes',
+
+    // Pharmacy Detail
+    pharmacy_not_found: 'Farmácia não encontrada',
+    pharmacy_back_to_map: 'Voltar ao mapa',
+    pharmacy_available_meds: 'Medicamentos disponíveis',
+    pharmacy_units_stock: 'unidades em stock',
+    pharmacy_out_of_stock: 'Fora de stock',
+
+    // Dashboard
+    dashboard_panel: 'Painel de Gestão',
+    dashboard_title: 'Dashboard da Farmácia',
+    dashboard_meds_available: 'Medicamentos disponíveis',
+    dashboard_units_stock: 'Unidades em stock',
+    dashboard_low_stock: 'Stock baixo',
+    dashboard_rating: 'Rating',
+    dashboard_stock_mgmt: 'Gestão de Stock',
+    dashboard_update_realtime: 'Actualize em tempo real',
+    dashboard_qty: 'Qtd:',
+    dashboard_realtime_note: '* As alterações de stock são guardadas na base de dados em tempo real.',
+    dashboard_loading: 'A carregar dashboard...',
 
     // Auth
     auth_welcome_back: 'Bem-vindo de volta',
@@ -79,6 +107,9 @@ export const translations = {
     auth_create_loading: 'A criar conta...',
     auth_has_account: 'Já tem conta?',
     auth_signin_link: 'Iniciar sessão',
+    auth_welcome_user: 'Bem-vindo',
+    auth_session_ended: 'Sessão terminada',
+    auth_session_started: 'Sessão iniciada!',
 
     // Reservations
     reservations_title: 'Minhas Reservas',
@@ -92,9 +123,120 @@ export const translations = {
     reservations_empty_cancelled_title: 'Nenhuma reserva cancelada',
     reservations_empty_history: 'O seu histórico aparecerá aqui.',
     reservations_search_btn: 'Pesquisar medicamento',
+    reservations_signin_required: 'Inicie sessão para ver as suas reservas',
+    reservations_signin_desc: 'Acompanhe os seus medicamentos reservados em qualquer farmácia.',
+    reservations_cancelled_toast: 'Reserva cancelada',
+    reservations_completed_toast: 'Reserva marcada como concluída',
+    reservations_removed_toast: 'Reserva removida do histórico',
     status_pending: 'Pendente',
     status_completed: 'Concluída',
     status_cancelled: 'Cancelada',
+
+    // Profile
+    profile_personal_info: 'Informação pessoal',
+    profile_update_data: 'Actualize os seus dados',
+    profile_password: 'Palavra-passe',
+    profile_keep_secure: 'Mantenha a sua conta segura',
+    profile_new_password: 'Nova palavra-passe',
+    profile_confirm_password: 'Confirmar palavra-passe',
+    profile_repeat_password: 'Repita a palavra-passe',
+    profile_change_password: 'Alterar palavra-passe',
+    profile_email_note: 'Alterar o email pode exigir nova confirmação',
+    profile_since: 'Desde',
+    profile_reservations: 'reservas',
+    profile_reservation: 'reserva',
+    profile_updated: 'Perfil actualizado!',
+    profile_pass_updated: 'Palavra-passe actualizada!',
+    profile_pass_no_match: 'As palavras-passe não coincidem',
+    profile_pass_min: 'A palavra-passe deve ter pelo menos 6 caracteres',
+    profile_saving: 'A guardar...',
+    profile_updating: 'A actualizar...',
+
+    // Reserve Modal
+    reserve_confirm_title: 'Confirmar reserva',
+    reserve_signin_needed: 'Inicie sessão para reservar',
+    reserve_signin_desc: 'Precisa de uma conta para reservar medicamentos.',
+    reserve_confirmed: 'Reserva confirmada!',
+    reserve_redirecting: 'A redirigir para as suas reservas...',
+    reserve_medicine: 'Medicamento',
+    reserve_pharmacy: 'Farmácia',
+    reserve_note: 'Ao confirmar, a reserva ficará disponível na farmácia por 24h. Levante directamente no balcão.',
+    reserve_confirm: 'Confirmar reserva',
+    reserve_confirming: 'A confirmar...',
+    reserve_success_toast: 'Reserva confirmada com sucesso!',
+    reserve_signin_required: 'Precisa de iniciar sessão.',
+
+    // Reviews
+    reviews_title: 'Avaliações',
+    reviews_your_review: 'A sua avaliação',
+    reviews_leave_review: 'Deixe a sua avaliação',
+    reviews_comment_placeholder: 'Partilhe a sua experiência (opcional)',
+    reviews_submit: 'Submeter',
+    reviews_update: 'Actualizar',
+    reviews_sending: 'A enviar...',
+    reviews_remove: 'Remover',
+    reviews_signin_prompt: 'Inicie sessão para deixar a sua avaliação',
+    reviews_signin_btn: 'Iniciar sessão',
+    reviews_loading: 'A carregar avaliações...',
+    reviews_empty: 'Ainda não há avaliações. Seja o primeiro!',
+    reviews_count_one: 'avaliação',
+    reviews_count_many: 'avaliações',
+    reviews_you: 'Você',
+    reviews_submitted: 'Obrigado pela sua avaliação!',
+    reviews_updated: 'Avaliação actualizada!',
+    reviews_deleted: 'Avaliação removida',
+    reviews_error: 'Erro ao submeter avaliação',
+
+    // Admin
+    admin_panel: 'Painel Administrativo',
+    admin_title: 'Gestão',
+    admin_medicines: 'Medicamentos',
+    admin_pharmacies: 'Farmácias',
+    admin_new: 'Novo',
+    admin_empty: 'Nada por aqui ainda.',
+    admin_edit: 'Editar',
+    admin_create_new: 'Criar novo',
+    admin_name: 'Nome',
+    admin_category: 'Categoria',
+    admin_price: 'Preço (MT)',
+    admin_address: 'Morada',
+    admin_phone: 'Telefone',
+    admin_hours: 'Horário',
+    admin_latitude: 'Latitude',
+    admin_longitude: 'Longitude',
+    admin_saving: 'A guardar...',
+    admin_save: 'Guardar',
+    admin_created: 'Criado com sucesso!',
+    admin_updated: 'Actualizado!',
+    admin_removed: 'Removido!',
+    admin_delete_confirm: 'Apagar "{name}"? Esta acção é irreversível.',
+    admin_access_denied: 'Acesso restrito a administradores',
+
+    // Footer
+    footer_tagline: 'A plataforma digital que liga os moçambicanos aos medicamentos disponíveis nas farmácias de Maputo, em tempo real.',
+    footer_platform: 'Plataforma',
+    footer_account: 'Conta',
+    footer_contact: 'Contacto',
+    footer_made_with: 'Feito com',
+    footer_in_maputo: 'em Maputo — Projecto Académico © 2026',
+
+    // 404
+    notfound_title: 'Página não encontrada',
+    notfound_desc: 'A página que procura não existe ou foi movida.',
+    notfound_home: 'Página inicial',
+    notfound_search: 'Pesquisar medicamentos',
+
+    // Install Prompt
+    install_title: 'Instalar Vonamed',
+    install_desc: 'Aceda mais rápido, mesmo offline.',
+    install_btn: 'Instalar',
+    install_later: 'Agora não',
+
+    // Loading Screen
+    loading_text: 'A carregar...',
+
+    // Protected Route
+    protected_signin_required: 'Precisa de iniciar sessão para aceder a esta página',
 
     // Common
     common_reserve: 'Reservar',
@@ -105,6 +247,12 @@ export const translations = {
     common_available: 'Disponível',
     common_unavailable: 'Indisponível',
     common_loading: 'A carregar...',
+    common_of: 'de',
+    common_km_distance: 'km de distância',
+    common_hours_24: '24 horas',
+
+    // Units & labels
+    unit_mt: 'MT',
   },
   en: {
     // Navbar
@@ -118,6 +266,7 @@ export const translations = {
     nav_reservations: 'My reservations',
     nav_logout: 'Sign out',
     nav_signed_as: 'Signed in as',
+    nav_admin: 'Admin',
 
     // Home
     home_badge: 'Available now in Maputo',
@@ -144,6 +293,10 @@ export const translations = {
     home_cta_title: 'Ready to start?',
     home_cta_text: 'Explore the interactive map and discover all partner pharmacies in Maputo.',
     home_cta_button: 'View interactive map',
+    home_card_searched: 'Searched now',
+    home_card_verified: 'Verified',
+    home_card_see_all: 'See all results',
+    home_card_in_stock: 'In stock',
 
     // Search
     search_title: 'Search medicines',
@@ -169,6 +322,29 @@ export const translations = {
     map_title: 'Pharmacy Map',
     map_subtitle: 'Explore all partner pharmacies in Maputo',
     map_in_stock: 'In stock',
+    map_user_location: 'Your location',
+    map_available_of: 'medicines available',
+    map_see_details: 'View Details',
+
+    // Pharmacy Detail
+    pharmacy_not_found: 'Pharmacy not found',
+    pharmacy_back_to_map: 'Back to map',
+    pharmacy_available_meds: 'Available medicines',
+    pharmacy_units_stock: 'units in stock',
+    pharmacy_out_of_stock: 'Out of stock',
+
+    // Dashboard
+    dashboard_panel: 'Management Panel',
+    dashboard_title: 'Pharmacy Dashboard',
+    dashboard_meds_available: 'Medicines available',
+    dashboard_units_stock: 'Units in stock',
+    dashboard_low_stock: 'Low stock',
+    dashboard_rating: 'Rating',
+    dashboard_stock_mgmt: 'Stock Management',
+    dashboard_update_realtime: 'Update in real-time',
+    dashboard_qty: 'Qty:',
+    dashboard_realtime_note: '* Stock changes are saved to the database in real-time.',
+    dashboard_loading: 'Loading dashboard...',
 
     // Auth
     auth_welcome_back: 'Welcome back',
@@ -186,6 +362,9 @@ export const translations = {
     auth_create_loading: 'Creating account...',
     auth_has_account: 'Already have an account?',
     auth_signin_link: 'Sign in',
+    auth_welcome_user: 'Welcome',
+    auth_session_ended: 'Session ended',
+    auth_session_started: 'Signed in!',
 
     // Reservations
     reservations_title: 'My Reservations',
@@ -199,9 +378,120 @@ export const translations = {
     reservations_empty_cancelled_title: 'No cancelled reservations',
     reservations_empty_history: 'Your history will appear here.',
     reservations_search_btn: 'Search medicine',
+    reservations_signin_required: 'Sign in to see your reservations',
+    reservations_signin_desc: 'Track your reserved medicines at any pharmacy.',
+    reservations_cancelled_toast: 'Reservation cancelled',
+    reservations_completed_toast: 'Reservation marked as completed',
+    reservations_removed_toast: 'Reservation removed from history',
     status_pending: 'Pending',
     status_completed: 'Completed',
     status_cancelled: 'Cancelled',
+
+    // Profile
+    profile_personal_info: 'Personal information',
+    profile_update_data: 'Update your details',
+    profile_password: 'Password',
+    profile_keep_secure: 'Keep your account secure',
+    profile_new_password: 'New password',
+    profile_confirm_password: 'Confirm password',
+    profile_repeat_password: 'Repeat the password',
+    profile_change_password: 'Change password',
+    profile_email_note: 'Changing email may require new confirmation',
+    profile_since: 'Since',
+    profile_reservations: 'reservations',
+    profile_reservation: 'reservation',
+    profile_updated: 'Profile updated!',
+    profile_pass_updated: 'Password updated!',
+    profile_pass_no_match: 'Passwords do not match',
+    profile_pass_min: 'Password must be at least 6 characters',
+    profile_saving: 'Saving...',
+    profile_updating: 'Updating...',
+
+    // Reserve Modal
+    reserve_confirm_title: 'Confirm reservation',
+    reserve_signin_needed: 'Sign in to reserve',
+    reserve_signin_desc: 'You need an account to reserve medicines.',
+    reserve_confirmed: 'Reservation confirmed!',
+    reserve_redirecting: 'Redirecting to your reservations...',
+    reserve_medicine: 'Medicine',
+    reserve_pharmacy: 'Pharmacy',
+    reserve_note: 'Once confirmed, the reservation will be held at the pharmacy for 24h. Pick up directly at the counter.',
+    reserve_confirm: 'Confirm reservation',
+    reserve_confirming: 'Confirming...',
+    reserve_success_toast: 'Reservation confirmed successfully!',
+    reserve_signin_required: 'You need to sign in.',
+
+    // Reviews
+    reviews_title: 'Reviews',
+    reviews_your_review: 'Your review',
+    reviews_leave_review: 'Leave your review',
+    reviews_comment_placeholder: 'Share your experience (optional)',
+    reviews_submit: 'Submit',
+    reviews_update: 'Update',
+    reviews_sending: 'Sending...',
+    reviews_remove: 'Remove',
+    reviews_signin_prompt: 'Sign in to leave your review',
+    reviews_signin_btn: 'Sign in',
+    reviews_loading: 'Loading reviews...',
+    reviews_empty: 'No reviews yet. Be the first!',
+    reviews_count_one: 'review',
+    reviews_count_many: 'reviews',
+    reviews_you: 'You',
+    reviews_submitted: 'Thanks for your review!',
+    reviews_updated: 'Review updated!',
+    reviews_deleted: 'Review removed',
+    reviews_error: 'Error submitting review',
+
+    // Admin
+    admin_panel: 'Admin Panel',
+    admin_title: 'Management',
+    admin_medicines: 'Medicines',
+    admin_pharmacies: 'Pharmacies',
+    admin_new: 'New',
+    admin_empty: 'Nothing here yet.',
+    admin_edit: 'Edit',
+    admin_create_new: 'Create new',
+    admin_name: 'Name',
+    admin_category: 'Category',
+    admin_price: 'Price (MT)',
+    admin_address: 'Address',
+    admin_phone: 'Phone',
+    admin_hours: 'Hours',
+    admin_latitude: 'Latitude',
+    admin_longitude: 'Longitude',
+    admin_saving: 'Saving...',
+    admin_save: 'Save',
+    admin_created: 'Created successfully!',
+    admin_updated: 'Updated!',
+    admin_removed: 'Removed!',
+    admin_delete_confirm: 'Delete "{name}"? This action cannot be undone.',
+    admin_access_denied: 'Access restricted to administrators',
+
+    // Footer
+    footer_tagline: 'The digital platform connecting Mozambicans to medicines available at pharmacies in Maputo, in real-time.',
+    footer_platform: 'Platform',
+    footer_account: 'Account',
+    footer_contact: 'Contact',
+    footer_made_with: 'Made with',
+    footer_in_maputo: 'in Maputo — Academic Project © 2026',
+
+    // 404
+    notfound_title: 'Page not found',
+    notfound_desc: 'The page you are looking for does not exist or has been moved.',
+    notfound_home: 'Home page',
+    notfound_search: 'Search medicines',
+
+    // Install Prompt
+    install_title: 'Install Vonamed',
+    install_desc: 'Access faster, even offline.',
+    install_btn: 'Install',
+    install_later: 'Not now',
+
+    // Loading Screen
+    loading_text: 'Loading...',
+
+    // Protected Route
+    protected_signin_required: 'You need to sign in to access this page',
 
     // Common
     common_reserve: 'Reserve',
@@ -212,5 +502,11 @@ export const translations = {
     common_available: 'Available',
     common_unavailable: 'Unavailable',
     common_loading: 'Loading...',
+    common_of: 'of',
+    common_km_distance: 'km away',
+    common_hours_24: '24 hours',
+
+    // Units & labels
+    unit_mt: 'MT',
   },
 }

@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react'
 import { Package, TrendingUp, AlertCircle, CheckCircle2, Store } from 'lucide-react'
 import { useData } from '../context/DataContext.jsx'
 import { supabase } from '../lib/supabase.js'
+import { useI18n } from '../context/I18nContext.jsx'
 
 export default function Dashboard() {
   const { pharmacies, medicines, loading: dataLoading } = useData()
+  const { t } = useI18n()
   const [selectedId, setSelectedId] = useState(null)
   const [stocks, setStocks] = useState({})
 
@@ -19,7 +21,7 @@ export default function Dashboard() {
   if (dataLoading || !selectedId) {
     return (
       <div className="max-w-7xl mx-auto px-6 py-10">
-        <p className="text-slate-500">A carregar dashboard...</p>
+        <p className="text-slate-500">{t('dashboard_loading')}</p>
       </div>
     )
   }
@@ -65,18 +67,18 @@ export default function Dashboard() {
   const lowStock = Object.entries(currentStock).filter(([_, v]) => v.available && v.qty < 20).length
 
   const metrics = [
-    { label: 'Medicamentos disponíveis', value: `${totalAvailable}/${medicines.length}`, icon: CheckCircle2, color: 'emerald' },
-    { label: 'Unidades em stock', value: totalUnits, icon: Package, color: 'blue' },
-    { label: 'Stock baixo', value: lowStock, icon: AlertCircle, color: 'amber' },
-    { label: 'Rating', value: pharmacy?.rating, icon: TrendingUp, color: 'brand' },
+    { label: t('dashboard_meds_available'), value: `${totalAvailable}/${medicines.length}`, icon: CheckCircle2, color: 'emerald' },
+    { label: t('dashboard_units_stock'), value: totalUnits, icon: Package, color: 'blue' },
+    { label: t('dashboard_low_stock'), value: lowStock, icon: AlertCircle, color: 'amber' },
+    { label: t('dashboard_rating'), value: pharmacy?.rating, icon: TrendingUp, color: 'brand' },
   ]
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-10">
       <div className="flex items-center justify-between flex-wrap gap-4 mb-8">
         <div>
-          <div className="text-xs uppercase tracking-wider text-brand-600 font-semibold">Painel de Gestão</div>
-          <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white">Dashboard da Farmácia</h1>
+          <div className="text-xs uppercase tracking-wider text-brand-600 font-semibold">{t('dashboard_panel')}</div>
+          <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white">{t('dashboard_title')}</h1>
         </div>
         <div className="flex items-center gap-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 shadow-sm">
           <Store className="w-4 h-4 text-brand-600" />
@@ -108,8 +110,8 @@ export default function Dashboard() {
       {/* Stock management */}
       <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
         <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-          <h2 className="font-bold text-slate-900 dark:text-white">Gestão de Stock</h2>
-          <span className="text-xs text-slate-500 dark:text-slate-400">Actualize em tempo real</span>
+          <h2 className="font-bold text-slate-900 dark:text-white">{t('dashboard_stock_mgmt')}</h2>
+          <span className="text-xs text-slate-500 dark:text-slate-400">{t('dashboard_update_realtime')}</span>
         </div>
         <div className="divide-y divide-slate-100 dark:divide-slate-800">
           {medicines.map((m) => {
@@ -122,7 +124,7 @@ export default function Dashboard() {
                   <div className="text-xs text-slate-500 dark:text-slate-400">{m.category} • {m.price} MT</div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <label className="text-xs text-slate-500 dark:text-slate-400">Qtd:</label>
+                  <label className="text-xs text-slate-500 dark:text-slate-400">{t('dashboard_qty')}</label>
                   <input
                     type="number"
                     min="0"
@@ -139,7 +141,7 @@ export default function Dashboard() {
                       : 'bg-rose-100 text-rose-700 hover:bg-rose-200'
                   }`}
                 >
-                  {s.available ? 'Disponível' : 'Indisponível'}
+                  {s.available ? t('common_available') : t('common_unavailable')}
                 </button>
               </div>
             )
@@ -148,7 +150,7 @@ export default function Dashboard() {
       </div>
 
       <p className="text-xs text-slate-400 mt-4 text-center">
-        * As alterações de stock são guardadas na base de dados em tempo real.
+        {t('dashboard_realtime_note')}
       </p>
     </div>
   )
