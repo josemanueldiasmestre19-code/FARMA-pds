@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
-import { Pill, MapPin, CheckCircle2, LogIn } from 'lucide-react'
+import { Pill, MapPin, CheckCircle2, LogIn, Navigation } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import Modal from './ui/Modal.jsx'
 import Button from './ui/Button.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
@@ -32,11 +33,6 @@ export default function ReserveModal({ open, onClose, medicine, pharmacy }) {
     if (res.ok) {
       setDone(true)
       toast.success(t('reserve_success_toast'))
-      setTimeout(() => {
-        setDone(false)
-        onClose()
-        navigate('/reservas')
-      }, 1400)
     } else {
       toast.error(res.error)
     }
@@ -70,6 +66,13 @@ export default function ReserveModal({ open, onClose, medicine, pharmacy }) {
           </div>
           <h4 className="text-xl font-extrabold text-slate-900 dark:text-white">{t('reserve_confirmed')}</h4>
           <p className="text-sm text-slate-500 mt-1">{t('reserve_redirecting')}</p>
+          <Link
+            to={`/mapa?route=${pharmacy.id}`}
+            onClick={handleClose}
+            className="inline-flex items-center gap-2 mt-4 px-5 py-2.5 bg-blue-500 text-white font-semibold text-sm rounded-xl hover:bg-blue-600 transition"
+          >
+            <Navigation className="w-4 h-4" /> Ver rota até à farmácia
+          </Link>
         </div>
       ) : (
         <>

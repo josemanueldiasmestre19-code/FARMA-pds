@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { MapPin, Phone, Clock, Star, ArrowLeft, CheckCircle2, XCircle, ShoppingBag } from 'lucide-react'
+import { MapPin, Phone, Clock, Star, ArrowLeft, CheckCircle2, XCircle, ShoppingBag, Navigation } from 'lucide-react'
 import ReserveModal from '../components/ReserveModal.jsx'
 import PharmacyReviews from '../components/PharmacyReviews.jsx'
 import { useData } from '../context/DataContext.jsx'
@@ -47,6 +47,12 @@ export default function PharmacyDetail() {
             <span className="text-brand-50">{pharmacy.hours}</span>
           </div>
         </div>
+        <Link
+          to={`/mapa?route=${pharmacy.id}`}
+          className="inline-flex items-center gap-2 mt-5 px-5 py-2.5 bg-white/20 backdrop-blur hover:bg-white/30 text-white font-semibold text-sm rounded-xl transition"
+        >
+          <Navigation className="w-4 h-4" /> Ver rota até aqui
+        </Link>
       </div>
 
       <div className="mt-8">

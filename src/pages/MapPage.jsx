@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react'
-import { Link } from 'react-router-dom'
+import { useState, useMemo, useEffect } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
 import { MapPin, Star, Clock, Navigation, Crosshair, Loader2 } from 'lucide-react'
 import PharmacyMap from '../components/PharmacyMap.jsx'
 import { useData } from '../context/DataContext.jsx'
@@ -21,8 +21,22 @@ export default function MapPage() {
   const { pharmacies, medicines } = useData()
   const { t } = useI18n()
   const { location: userLocation, loading: locLoading, hasPermission, requestLocation } = useUserLocation()
+  const [searchParams, setSearchParams] = useSearchParams()
   const [selectedId, setSelectedId] = useState(null)
   const [sortBy, setSortBy] = useState('distance')
+
+  // Auto-select pharmacy from URL ?route=id
+  useEffect(() => {
+    const routeId = searchParams.get('route')
+    if (routeId) {
+      const id = Number(routeId)
+      if (pharmacies.find((p) => p.id === id)) {
+        setSelectedId(id)
+        requestLocation()
+      }
+      setSearchParams({}, { replace: true })
+    }
+  }, [searchParams, pharmacies, setSearchParams, requestLocation])
 
   const sortedPharmacies = useMemo(() => {
     return pharmacies

@@ -1,9 +1,10 @@
-import { MapContainer, TileLayer, Marker, Popup, CircleMarker, Polyline, useMap } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import { Link } from 'react-router-dom'
 import { useData } from '../context/DataContext.jsx'
 import { useI18n } from '../context/I18nContext.jsx'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
+import { Loader2, Navigation, Car, Footprints, X, ExternalLink } from 'lucide-react'
 
 const pharmacyIcon = L.divIcon({
   className: '',
@@ -31,9 +32,7 @@ const userIcon = L.divIcon({
 function FlyToLocation({ position, zoom }) {
   const map = useMap()
   useEffect(() => {
-    if (position) {
-      map.flyTo(position, zoom || 15, { duration: 1.2 })
-    }
+    if (position) map.flyTo(position, zoom || 15, { duration: 1.2 })
   }, [position, zoom, map])
   return null
 }
@@ -53,10 +52,8 @@ function formatDistance(km) {
   return `${km.toFixed(1)}km`
 }
 
-function estimateTime(km) {
-  const walkMin = Math.round((km / 5) * 60)
-  const driveMin = Math.max(1, Math.round((km / 30) * 60))
-  return { walkMin, driveMin }
+function estimateWalkTime(km) {
+  return Math.max(1, Math.round((km / 5) * 60))
 }
 
 function distanceKm(a, b) {
@@ -76,27 +73,34 @@ export default function PharmacyMap({
   selectedPharmacyId = null,
   onSelectPharmacy = null,
   showRoute = false,
+  onRequestLocation = null,
 }) {
   const { pharmacies, medicines } = useData()
   const { t } = useI18n()
   const [routeCoords, setRouteCoords] = useState(null)
   const [routeInfo, setRouteInfo] = useState(null)
+  const [routeLoading, setRouteLoading] = useState(false)
   const [flyTarget, setFlyTarget] = useState(null)
+  const prevSelectedRef = useRef(null)
 
   const selectedPharmacy = pharmacies.find((p) => p.id === selectedPharmacyId)
 
-  // Fetch OSRM route when showRoute and selectedPharmacy
   useEffect(() => {
     if (!showRoute || !selectedPharmacy || !userLocation) {
       setRouteCoords(null)
       setRouteInfo(null)
+      setRouteLoading(false)
       return
     }
+
+    if (prevSelectedRef.current === selectedPharmacyId) return
+    prevSelectedRef.current = selectedPharmacyId
 
     const [uLat, uLng] = userLocation
     const [pLat, pLng] = selectedPharmacy.coords
 
     async function fetchRoute() {
+      setRouteLoading(true)
       try {
         const res = await fetch(
           `https://router.project-osrm.org/route/v1/driving/${uLng},${uLat};${pLng},${pLat}?overview=full&geometries=geojson`
@@ -105,24 +109,52 @@ export default function PharmacyMap({
         if (data.routes?.[0]) {
           const coords = data.routes[0].geometry.coordinates.map(([lng, lat]) => [lat, lng])
           setRouteCoords(coords)
-          const distKm = data.routes[0].distance / 1000
-          const durMin = Math.round(data.routes[0].duration / 60)
-          setRouteInfo({ distance: distKm, duration: durMin })
+          setRouteInfo({
+            distance: data.routes[0].distance / 1000,
+            driveDuration: Math.max(1, Math.round(data.routes[0].duration / 60)),
+            walkDuration: estimateWalkTime(data.routes[0].distance / 1000),
+          })
+        } else {
+          fallbackRoute()
         }
       } catch {
-        // Fallback: straight line
-        setRouteCoords([userLocation, selectedPharmacy.coords])
-        const dist = distanceKm(userLocation, selectedPharmacy.coords)
-        setRouteInfo({ distance: dist, duration: estimateTime(dist).driveMin })
+        fallbackRoute()
       }
+      setRouteLoading(false)
+    }
+
+    function fallbackRoute() {
+      setRouteCoords([userLocation, selectedPharmacy.coords])
+      const dist = distanceKm(userLocation, selectedPharmacy.coords)
+      setRouteInfo({
+        distance: dist,
+        driveDuration: Math.max(1, Math.round((dist / 30) * 60)),
+        walkDuration: estimateWalkTime(dist),
+      })
     }
 
     fetchRoute()
-  }, [showRoute, selectedPharmacy, userLocation])
+  }, [showRoute, selectedPharmacyId, selectedPharmacy, userLocation])
 
-  // Bounds for route
-  const routeBounds = showRoute && routeCoords && routeCoords.length >= 2
-    ? routeCoords
+  useEffect(() => {
+    if (!showRoute || !selectedPharmacyId) {
+      prevSelectedRef.current = null
+    }
+  }, [showRoute, selectedPharmacyId])
+
+  const handleSelectAndRoute = (pharmacyId) => {
+    if (!userLocation || !onRequestLocation) {
+      onSelectPharmacy?.(pharmacyId)
+      return
+    }
+    onSelectPharmacy?.(pharmacyId)
+    setFlyTarget(null)
+  }
+
+  const routeBounds = showRoute && routeCoords && routeCoords.length >= 2 ? routeCoords : null
+
+  const googleMapsUrl = selectedPharmacy && userLocation
+    ? `https://www.google.com/maps/dir/${userLocation[0]},${userLocation[1]}/${selectedPharmacy.coords[0]},${selectedPharmacy.coords[1]}`
     : null
 
   return (
@@ -141,32 +173,32 @@ export default function PharmacyMap({
         {flyTarget && <FlyToLocation position={flyTarget} zoom={16} />}
         {routeBounds && <FitBounds bounds={routeBounds} />}
 
-        {/* User location */}
+        {/* User */}
         {userLocation && (
           <Marker position={userLocation} icon={userIcon}>
             <Popup>
-              <div className="text-center">
-                <div className="font-bold text-sm text-slate-900">{t('map_user_location')}</div>
+              <div className="text-center font-bold text-sm text-slate-900">
+                {t('map_user_location')}
               </div>
             </Popup>
           </Marker>
         )}
 
-        {/* Route polyline */}
+        {/* Route */}
         {routeCoords && (
           <Polyline
             positions={routeCoords}
             pathOptions={{
               color: '#059669',
               weight: 5,
-              opacity: 0.8,
-              dashArray: '10 6',
+              opacity: 0.85,
+              dashArray: '12 8',
               lineCap: 'round',
             }}
           />
         )}
 
-        {/* Pharmacy markers */}
+        {/* Pharmacies */}
         {pharmacies.map((p) => {
           const isSelected = p.id === selectedPharmacyId
           const availableCount = Object.values(p.stock).filter((s) => s.available).length
@@ -179,7 +211,6 @@ export default function PharmacyMap({
               icon={isSelected ? selectedPharmacyIcon : pharmacyIcon}
               eventHandlers={{
                 click: () => {
-                  onSelectPharmacy?.(p.id)
                   setFlyTarget(p.coords)
                 },
               }}
@@ -190,30 +221,26 @@ export default function PharmacyMap({
                   <div className="text-xs text-slate-500">{p.address}</div>
 
                   <div className="flex items-center gap-3 mt-2 text-xs">
-                    <span className="font-semibold text-brand-700">
-                      {availableCount}/{medicines.length} {t('map_available_of')}
+                    <span className="font-semibold text-emerald-700">
+                      {availableCount}/{medicines.length} meds
                     </span>
                     {dist != null && (
-                      <span className="text-slate-500">
-                        📍 {formatDistance(dist)}
-                      </span>
+                      <span className="text-slate-500">📍 {formatDistance(dist)}</span>
                     )}
                   </div>
 
                   <div className="flex gap-2 mt-3">
                     <Link
                       to={`/farmacia/${p.id}`}
-                      className="flex-1 text-center px-3 py-1.5 bg-brand-600 text-white rounded-lg text-xs font-semibold hover:bg-brand-700"
+                      className="flex-1 text-center px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-semibold hover:bg-emerald-700"
                     >
-                      {t('common_reserve')}
+                      {t('map_see_details')}
                     </Link>
                     <button
-                      onClick={() => {
-                        onSelectPharmacy?.(p.id)
-                      }}
-                      className="px-3 py-1.5 bg-slate-100 text-slate-700 rounded-lg text-xs font-semibold hover:bg-slate-200"
+                      onClick={() => handleSelectAndRoute(p.id)}
+                      className="px-3 py-1.5 bg-blue-500 text-white rounded-lg text-xs font-semibold hover:bg-blue-600 flex items-center gap-1"
                     >
-                      🗺️ Rota
+                      <Navigation className="w-3 h-3" /> Rota
                     </button>
                   </div>
                 </div>
@@ -223,42 +250,67 @@ export default function PharmacyMap({
         })}
       </MapContainer>
 
-      {/* Route info overlay */}
-      {showRoute && routeInfo && selectedPharmacy && (
+      {/* Route loading overlay */}
+      {routeLoading && (
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[1000] bg-white dark:bg-slate-900 rounded-xl shadow-lg px-4 py-2 flex items-center gap-2 border border-slate-200 dark:border-slate-800">
+          <Loader2 className="w-4 h-4 animate-spin text-brand-600" />
+          <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">A calcular rota...</span>
+        </div>
+      )}
+
+      {/* Route info panel */}
+      {showRoute && routeInfo && selectedPharmacy && !routeLoading && (
         <div className="absolute bottom-4 left-4 right-4 z-[1000] bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="font-bold text-slate-900 dark:text-white text-sm">{selectedPharmacy.name}</div>
-              <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{selectedPharmacy.address}</div>
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0">
+              <div className="font-bold text-slate-900 dark:text-white text-sm truncate">{selectedPharmacy.name}</div>
+              <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate">{selectedPharmacy.address}</div>
             </div>
             <button
-              onClick={() => onSelectPharmacy?.(null)}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800"
+              onClick={() => {
+                onSelectPharmacy?.(null)
+                prevSelectedRef.current = null
+              }}
+              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 shrink-0"
             >
-              ✕
+              <X className="w-4 h-4" />
             </button>
           </div>
-          <div className="flex items-center gap-4 mt-3">
-            <div className="flex items-center gap-2 px-3 py-2 bg-brand-50 dark:bg-brand-900/30 rounded-xl">
-              <span className="text-lg">🚗</span>
+
+          <div className="flex items-center gap-3 mt-3 flex-wrap">
+            <div className="flex items-center gap-2 px-3 py-2 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
+              <Car className="w-4 h-4 text-blue-600" />
               <div>
                 <div className="text-sm font-bold text-slate-900 dark:text-white">{formatDistance(routeInfo.distance)}</div>
-                <div className="text-[10px] text-slate-500 dark:text-slate-400">~{routeInfo.duration} min</div>
+                <div className="text-[10px] text-slate-500 dark:text-slate-400">~{routeInfo.driveDuration} min</div>
               </div>
             </div>
-            <div className="flex items-center gap-2 px-3 py-2 bg-slate-50 dark:bg-slate-800 rounded-xl">
-              <span className="text-lg">🚶</span>
+            <div className="flex items-center gap-2 px-3 py-2 bg-amber-50 dark:bg-amber-900/20 rounded-xl">
+              <Footprints className="w-4 h-4 text-amber-600" />
               <div>
                 <div className="text-sm font-bold text-slate-900 dark:text-white">{formatDistance(routeInfo.distance)}</div>
-                <div className="text-[10px] text-slate-500 dark:text-slate-400">~{estimateTime(routeInfo.distance).walkMin} min</div>
+                <div className="text-[10px] text-slate-500 dark:text-slate-400">~{routeInfo.walkDuration} min</div>
               </div>
             </div>
-            <Link
-              to={`/farmacia/${selectedPharmacy.id}`}
-              className="ml-auto px-4 py-2 bg-brand-600 text-white rounded-xl text-xs font-semibold hover:bg-brand-700 transition"
-            >
-              {t('map_see_details')}
-            </Link>
+
+            <div className="flex gap-2 ml-auto">
+              {googleMapsUrl && (
+                <a
+                  href={googleMapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 px-3 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-semibold hover:bg-slate-200 dark:hover:bg-slate-700 transition"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" /> Google Maps
+                </a>
+              )}
+              <Link
+                to={`/farmacia/${selectedPharmacy.id}`}
+                className="flex items-center gap-1.5 px-3 py-2 bg-brand-600 text-white rounded-xl text-xs font-semibold hover:bg-brand-700 transition"
+              >
+                {t('map_see_details')}
+              </Link>
+            </div>
           </div>
         </div>
       )}
