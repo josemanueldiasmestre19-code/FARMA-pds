@@ -7,10 +7,11 @@ export default function useUserLocation() {
   const [loading, setLoading] = useState(false)
   const [hasPermission, setHasPermission] = useState(false)
   const [error, setError] = useState(null)
+  const [denied, setDenied] = useState(false)
 
   const requestLocation = useCallback(() => {
     if (!navigator.geolocation) {
-      setError('Geolocalização não suportada')
+      setError('Geolocalização não suportada neste browser')
       return
     }
 
@@ -21,20 +22,49 @@ export default function useUserLocation() {
       (pos) => {
         setLocation([pos.coords.latitude, pos.coords.longitude])
         setHasPermission(true)
+        setDenied(false)
         setLoading(false)
       },
       (err) => {
-        setError(err.message)
-        setHasPermission(false)
         setLoading(false)
+        if (err.code === 1) {
+          setDenied(true)
+          setError('Permissão de localização negada. Verifique as definições do browser.')
+        } else if (err.code === 2) {
+          setError('Localização indisponível. A usar localização padrão.')
+        } else {
+          setError('Tempo expirado. Tente novamente.')
+        }
+        setHasPermission(false)
       },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+      {
+        enableHighAccuracy: true,
+        timeout: 15000,
+        maximumAge: 30000,
+      }
     )
   }, [])
 
+  // Watch position for continuous updates
   useEffect(() => {
+    if (!navigator.geolocation) return
+
+    // First try
     requestLocation()
+
+    // Then watch for updates
+    const watchId = navigator.geolocation.watchPosition(
+      (pos) => {
+        setLocation([pos.coords.latitude, pos.coords.longitude])
+        setHasPermission(true)
+        setDenied(false)
+      },
+      () => {},
+      { enableHighAccuracy: true, maximumAge: 30000 }
+    )
+
+    return () => navigator.geolocation.clearWatch(watchId)
   }, [requestLocation])
 
-  return { location, loading, hasPermission, error, requestLocation, MAPUTO_CENTER }
+  return { location, loading, hasPermission, error, denied, requestLocation, MAPUTO_CENTER }
 }

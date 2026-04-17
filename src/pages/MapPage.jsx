@@ -20,7 +20,7 @@ function distanceKm(a, b) {
 export default function MapPage() {
   const { pharmacies, medicines } = useData()
   const { t } = useI18n()
-  const { location: userLocation, loading: locLoading, hasPermission, requestLocation } = useUserLocation()
+  const { location: userLocation, loading: locLoading, hasPermission, denied, error: locError, requestLocation } = useUserLocation()
   const [searchParams, setSearchParams] = useSearchParams()
   const [selectedId, setSelectedId] = useState(null)
   const [sortBy, setSortBy] = useState('distance')
@@ -66,20 +66,33 @@ export default function MapPage() {
           <p className="mt-2 text-slate-600 dark:text-slate-300">{t('map_subtitle')}</p>
         </div>
         <div className="flex items-center gap-2">
-          <button
-            onClick={requestLocation}
-            disabled={locLoading}
-            className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 shadow-sm transition disabled:opacity-50"
-          >
-            {locLoading ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : hasPermission ? (
-              <Crosshair className="w-4 h-4 text-brand-600" />
-            ) : (
-              <Navigation className="w-4 h-4" />
+          <div className="flex flex-col items-end gap-1">
+            <button
+              onClick={requestLocation}
+              disabled={locLoading}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold shadow-sm transition disabled:opacity-50 ${
+                hasPermission
+                  ? 'bg-brand-50 dark:bg-brand-900/30 border border-brand-200 dark:border-brand-800 text-brand-700 dark:text-brand-300'
+                  : denied
+                  ? 'bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300'
+                  : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800'
+              }`}
+            >
+              {locLoading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : hasPermission ? (
+                <Crosshair className="w-4 h-4 text-brand-600" />
+              ) : denied ? (
+                <Navigation className="w-4 h-4 text-rose-500" />
+              ) : (
+                <Navigation className="w-4 h-4" />
+              )}
+              {hasPermission ? 'Localizado' : denied ? 'Permissão negada' : 'Usar minha localização'}
+            </button>
+            {locError && !hasPermission && (
+              <p className="text-[11px] text-rose-500 dark:text-rose-400 max-w-[250px] text-right">{locError}</p>
             )}
-            {hasPermission ? 'Localizado' : 'Usar minha localização'}
-          </button>
+          </div>
         </div>
       </div>
 
