@@ -61,9 +61,9 @@ export default function PharmacyDetail() {
           {medicines.map((m) => {
             const stock = pharmacy.stock[m.id]
             return (
-              <div key={m.id} className="p-4 flex items-center justify-between gap-4">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
+              <div key={m.id} className="p-4 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <h3 className="font-semibold text-slate-900 dark:text-white">{m.name}</h3>
                     <span className="text-[10px] font-semibold text-brand-700 bg-brand-50 px-2 py-0.5 rounded-full">
                       {m.category}
@@ -73,25 +73,27 @@ export default function PharmacyDetail() {
                     {stock?.available ? `${stock.qty} ${t('pharmacy_units_stock')}` : t('pharmacy_out_of_stock')}
                   </div>
                 </div>
-                <div className="text-right">
-                  <div className="font-bold text-slate-900 dark:text-white">{m.price} {t('unit_mt')}</div>
-                  {stock?.available ? (
-                    <div className="text-xs flex items-center gap-1 text-emerald-600 font-semibold justify-end">
-                      <CheckCircle2 className="w-3 h-3" /> {t('common_available')}
-                    </div>
-                  ) : (
-                    <div className="text-xs flex items-center gap-1 text-rose-500 font-semibold justify-end">
-                      <XCircle className="w-3 h-3" /> {t('common_unavailable')}
-                    </div>
-                  )}
+                <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0">
+                  <div className="text-left sm:text-right">
+                    <div className="font-bold text-slate-900 dark:text-white">{m.price} {t('unit_mt')}</div>
+                    {stock?.available ? (
+                      <div className="text-xs flex items-center gap-1 text-emerald-600 font-semibold">
+                        <CheckCircle2 className="w-3 h-3" /> {t('common_available')}
+                      </div>
+                    ) : (
+                      <div className="text-xs flex items-center gap-1 text-rose-500 font-semibold">
+                        <XCircle className="w-3 h-3" /> {t('common_unavailable')}
+                      </div>
+                    )}
+                  </div>
+                  <button
+                    disabled={!stock?.available}
+                    onClick={() => setReserveMed(m)}
+                    className="shrink-0 px-4 py-2 rounded-lg bg-brand-600 text-white text-xs font-semibold hover:bg-brand-700 hover:scale-105 active:scale-95 disabled:bg-slate-200 dark:disabled:bg-slate-800 disabled:text-slate-400 dark:disabled:text-slate-600 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center gap-1.5 transition"
+                  >
+                    <ShoppingBag className="w-3.5 h-3.5" /> {t('common_reserve')}
+                  </button>
                 </div>
-                <button
-                  disabled={!stock?.available}
-                  onClick={() => setReserveMed(m)}
-                  className="px-4 py-2 rounded-lg bg-brand-600 text-white text-xs font-semibold hover:bg-brand-700 hover:scale-105 active:scale-95 disabled:bg-slate-200 dark:disabled:bg-slate-800 disabled:text-slate-400 dark:disabled:text-slate-600 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center gap-1.5 transition"
-                >
-                  <ShoppingBag className="w-3.5 h-3.5" /> {t('common_reserve')}
-                </button>
               </div>
             )
           })}

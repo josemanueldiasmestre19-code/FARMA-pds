@@ -103,7 +103,7 @@ export default function AddressSearch({ onSelectLocation, placeholder = 'Pesquis
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -4, scale: 0.98 }}
             transition={{ duration: 0.15 }}
-            className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl z-50 overflow-hidden"
+            className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl z-[9999] overflow-hidden max-h-[60vh] overflow-y-auto"
           >
             {results.map((item, i) => {
               const parts = item.display_name.split(', ')

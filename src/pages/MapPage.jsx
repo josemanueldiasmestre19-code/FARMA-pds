@@ -80,8 +80,8 @@ export default function MapPage() {
         </div>
 
         {/* Location controls */}
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-3 flex flex-col sm:flex-row gap-2">
-          <div className="flex-1">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-3 flex flex-col sm:flex-row gap-2 relative z-[1000]">
+          <div className="flex-1 relative">
             <AddressSearch
               onSelectLocation={handleSetManualLocation}
               placeholder="Onde está? Pesquise rua, bairro, zona..."
@@ -124,7 +124,7 @@ export default function MapPage() {
 
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Map */}
-        <div className="lg:col-span-2 h-[500px] sm:h-[600px]">
+        <div className="lg:col-span-2 h-[400px] sm:h-[600px]">
           <PharmacyMap
             userLocation={activeLocation}
             selectedPharmacyId={selectedId}

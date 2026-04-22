@@ -154,12 +154,21 @@ export default function PharmacyMap({
     }
   }, [showRoute, selectedPharmacyId])
 
-  const handleSelectAndRoute = (pharmacyId) => {
-    if (!userLocation || !onRequestLocation) {
-      onSelectPharmacy?.(pharmacyId)
-      return
+  const handleSelectAndRoute = (pharmacyId, e) => {
+    if (e) {
+      e.preventDefault()
+      e.stopPropagation()
     }
-    onSelectPharmacy?.(pharmacyId)
+    // Força sempre selecção (mesmo se já está seleccionada)
+    if (selectedPharmacyId === pharmacyId) {
+      onSelectPharmacy?.(null)
+      setTimeout(() => {
+        onSelectPharmacy?.(pharmacyId)
+        prevSelectedRef.current = null
+      }, 50)
+    } else {
+      onSelectPharmacy?.(pharmacyId)
+    }
     setFlyTarget(null)
   }
 
@@ -250,8 +259,9 @@ export default function PharmacyMap({
                       {t('map_see_details')}
                     </Link>
                     <button
-                      onClick={() => handleSelectAndRoute(p.id)}
-                      className="px-3 py-1.5 bg-blue-500 text-white rounded-lg text-xs font-semibold hover:bg-blue-600 flex items-center gap-1"
+                      onClick={(e) => handleSelectAndRoute(p.id, e)}
+                      className="px-3 py-1.5 bg-blue-500 text-white rounded-lg text-xs font-semibold hover:bg-blue-600 flex items-center gap-1 cursor-pointer"
+                      type="button"
                     >
                       <Navigation className="w-3 h-3" /> Rota
                     </button>
@@ -273,9 +283,9 @@ export default function PharmacyMap({
 
       {/* Route info panel */}
       {showRoute && routeInfo && selectedPharmacy && !routeLoading && (
-        <div className="absolute bottom-4 left-4 right-4 z-[1000] bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-4">
+        <div className="absolute bottom-2 left-2 right-2 sm:bottom-4 sm:left-4 sm:right-4 z-[1000] bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-3 sm:p-4">
           <div className="flex items-start justify-between gap-2">
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <div className="font-bold text-slate-900 dark:text-white text-sm truncate">{selectedPharmacy.name}</div>
               <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate">{selectedPharmacy.address}</div>
             </div>
@@ -290,40 +300,40 @@ export default function PharmacyMap({
             </button>
           </div>
 
-          <div className="flex items-center gap-3 mt-3 flex-wrap">
+          <div className="flex items-center gap-2 mt-3 flex-wrap">
             <div className="flex items-center gap-2 px-3 py-2 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
-              <Car className="w-4 h-4 text-blue-600" />
+              <Car className="w-4 h-4 text-blue-600 shrink-0" />
               <div>
-                <div className="text-sm font-bold text-slate-900 dark:text-white">{formatDistance(routeInfo.distance)}</div>
-                <div className="text-[10px] text-slate-500 dark:text-slate-400">~{routeInfo.driveDuration} min</div>
+                <div className="text-sm font-bold text-slate-900 dark:text-white leading-tight">{formatDistance(routeInfo.distance)}</div>
+                <div className="text-[10px] text-slate-500 dark:text-slate-400 leading-tight">~{routeInfo.driveDuration} min</div>
               </div>
             </div>
             <div className="flex items-center gap-2 px-3 py-2 bg-amber-50 dark:bg-amber-900/20 rounded-xl">
-              <Footprints className="w-4 h-4 text-amber-600" />
+              <Footprints className="w-4 h-4 text-amber-600 shrink-0" />
               <div>
-                <div className="text-sm font-bold text-slate-900 dark:text-white">{formatDistance(routeInfo.distance)}</div>
-                <div className="text-[10px] text-slate-500 dark:text-slate-400">~{routeInfo.walkDuration} min</div>
+                <div className="text-sm font-bold text-slate-900 dark:text-white leading-tight">{formatDistance(routeInfo.distance)}</div>
+                <div className="text-[10px] text-slate-500 dark:text-slate-400 leading-tight">~{routeInfo.walkDuration} min</div>
               </div>
             </div>
+          </div>
 
-            <div className="flex gap-2 ml-auto">
-              {googleMapsUrl && (
-                <a
-                  href={googleMapsUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 px-3 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-semibold hover:bg-slate-200 dark:hover:bg-slate-700 transition"
-                >
-                  <ExternalLink className="w-3.5 h-3.5" /> Google Maps
-                </a>
-              )}
-              <Link
-                to={`/farmacia/${selectedPharmacy.id}`}
-                className="flex items-center gap-1.5 px-3 py-2 bg-brand-600 text-white rounded-xl text-xs font-semibold hover:bg-brand-700 transition"
+          <div className="flex gap-2 mt-3">
+            {googleMapsUrl && (
+              <a
+                href={googleMapsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-semibold hover:bg-slate-200 dark:hover:bg-slate-700 transition"
               >
-                {t('map_see_details')}
-              </Link>
-            </div>
+                <ExternalLink className="w-3.5 h-3.5" /> Google Maps
+              </a>
+            )}
+            <Link
+              to={`/farmacia/${selectedPharmacy.id}`}
+              className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-brand-600 text-white rounded-xl text-xs font-semibold hover:bg-brand-700 transition"
+            >
+              {t('map_see_details')}
+            </Link>
           </div>
         </div>
       )}
