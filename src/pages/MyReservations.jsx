@@ -2,16 +2,18 @@ import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import toast from 'react-hot-toast'
-import { Pill, MapPin, Calendar, Trash2, ShoppingBag, CheckCircle2, XCircle, Clock } from 'lucide-react'
+import { Pill, MapPin, Calendar, Trash2, ShoppingBag, CheckCircle2, XCircle, Clock, QrCode } from 'lucide-react'
 import { useReservations } from '../context/ReservationsContext.jsx'
 import { useI18n } from '../context/I18nContext.jsx'
 import EmptyState from '../components/ui/EmptyState.jsx'
 import Button from '../components/ui/Button.jsx'
+import ReservationQR from '../components/ReservationQR.jsx'
 
 export default function MyReservations() {
   const { reservations, cancelReservation, completeReservation, deleteReservation } = useReservations()
   const { t } = useI18n()
   const [activeTab, setActiveTab] = useState('active')
+  const [qrReservation, setQrReservation] = useState(null)
 
   const TABS = [
     { id: 'active', label: t('reservations_tab_active'), status: ['pendente'], icon: Clock, color: 'amber' },
@@ -144,9 +146,17 @@ export default function MyReservations() {
                     <div className="text-right">
                       <div className="font-extrabold text-slate-900 dark:text-white">{r.price} MT</div>
                     </div>
-                    <div className="flex items-center gap-1.5">
+                    <div className="flex items-center gap-1.5 flex-wrap justify-end">
                       {r.status === 'pendente' && (
                         <>
+                          <button
+                            onClick={() => setQrReservation(r)}
+                            title={t('qr_show')}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand-600 text-white text-xs font-semibold hover:bg-brand-700 shadow-md shadow-brand-500/30 transition"
+                          >
+                            <QrCode className="w-3.5 h-3.5" />
+                            <span className="hidden sm:inline">{t('qr_show')}</span>
+                          </button>
                           <Button variant="secondary" size="sm" onClick={() => handleComplete(r.id)} title="Marcar como concluída">
                             <CheckCircle2 className="w-3.5 h-3.5" />
                           </Button>
@@ -168,6 +178,12 @@ export default function MyReservations() {
           </AnimatePresence>
         </div>
       )}
+
+      <ReservationQR
+        open={!!qrReservation}
+        onClose={() => setQrReservation(null)}
+        reservation={qrReservation}
+      />
     </div>
   )
 }

@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
-import { Pill, MapPin, CheckCircle2, LogIn, Navigation } from 'lucide-react'
+import { Pill, MapPin, CheckCircle2, LogIn, Navigation, QrCode } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import ReservationQR from './ReservationQR.jsx'
 import Modal from './ui/Modal.jsx'
 import Button from './ui/Button.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
@@ -16,6 +17,8 @@ export default function ReserveModal({ open, onClose, medicine, pharmacy }) {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [done, setDone] = useState(false)
+  const [confirmedReservation, setConfirmedReservation] = useState(null)
+  const [showQR, setShowQR] = useState(false)
 
   if (!medicine || !pharmacy) return null
 
@@ -32,6 +35,7 @@ export default function ReserveModal({ open, onClose, medicine, pharmacy }) {
     setLoading(false)
     if (res.ok) {
       setDone(true)
+      setConfirmedReservation(res.reservation)
       toast.success(t('reserve_success_toast'))
     } else {
       toast.error(res.error)
@@ -41,6 +45,8 @@ export default function ReserveModal({ open, onClose, medicine, pharmacy }) {
   const handleClose = () => {
     if (!loading) {
       setDone(false)
+      setConfirmedReservation(null)
+      setShowQR(false)
       onClose()
     }
   }
@@ -69,6 +75,14 @@ export default function ReserveModal({ open, onClose, medicine, pharmacy }) {
             O medicamento está reservado na farmácia por 24h.
           </p>
           <div className="flex flex-col gap-2">
+            {confirmedReservation && (
+              <button
+                onClick={() => setShowQR(true)}
+                className="flex items-center justify-center gap-2 w-full px-5 py-3 bg-brand-600 text-white font-semibold text-sm rounded-xl hover:bg-brand-700 shadow-md shadow-brand-500/30 transition"
+              >
+                <QrCode className="w-4 h-4" /> {t('qr_show')}
+              </button>
+            )}
             <Link
               to={`/mapa?route=${pharmacy.id}`}
               onClick={handleClose}
@@ -121,6 +135,12 @@ export default function ReserveModal({ open, onClose, medicine, pharmacy }) {
           </div>
         </>
       )}
+
+      <ReservationQR
+        open={showQR}
+        onClose={() => setShowQR(false)}
+        reservation={confirmedReservation}
+      />
     </Modal>
   )
 }

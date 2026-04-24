@@ -132,6 +132,15 @@ export const translations = {
     status_completed: 'Concluída',
     status_cancelled: 'Cancelada',
 
+    // QR Code
+    qr_header: 'Código de reserva',
+    qr_show: 'Mostrar QR',
+    qr_instructions: 'Apresente este QR na farmácia para levantar o medicamento',
+    qr_price: 'Preço',
+    qr_date: 'Data',
+    qr_code: 'Código',
+    qr_valid_until: 'Válido por 24h após a reserva',
+
     // Profile
     profile_personal_info: 'Informação pessoal',
     profile_update_data: 'Actualize os seus dados',
@@ -386,6 +395,15 @@ export const translations = {
     status_pending: 'Pending',
     status_completed: 'Completed',
     status_cancelled: 'Cancelled',
+
+    // QR Code
+    qr_header: 'Reservation code',
+    qr_show: 'Show QR',
+    qr_instructions: 'Show this QR at the pharmacy to collect your medicine',
+    qr_price: 'Price',
+    qr_date: 'Date',
+    qr_code: 'Code',
+    qr_valid_until: 'Valid for 24h after reservation',
 
     // Profile
     profile_personal_info: 'Personal information',
