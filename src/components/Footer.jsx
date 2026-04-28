@@ -25,6 +25,7 @@ export default function Footer() {
             <li><Link to="/mapa" className="hover:text-white transition">{t('nav_map')}</Link></li>
             <li><Link to="/reservas" className="hover:text-white transition">{t('nav_reservations')}</Link></li>
             <li><Link to="/dashboard" className="hover:text-white transition">{t('nav_dashboard')}</Link></li>
+            <li><Link to="/registar-farmacia" className="hover:text-white transition">Registar farmácia</Link></li>
           </ul>
         </div>
         <div>

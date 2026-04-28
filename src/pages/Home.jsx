@@ -167,7 +167,7 @@ export default function Home() {
       </section>
 
       {/* CTA */}
-      <section className="max-w-7xl mx-auto px-6 pb-20">
+      <section className="max-w-7xl mx-auto px-6 pb-12">
         <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-600 via-brand-700 to-emerald-800 p-10 md:p-14 text-white">
           <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -mr-20 -mt-20" />
           <div className="relative">
@@ -182,6 +182,27 @@ export default function Home() {
               {t('home_cta_button')} <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
+        </div>
+      </section>
+
+      {/* Pharmacy CTA */}
+      <section className="max-w-7xl mx-auto px-6 pb-20">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-8 md:p-10 flex flex-col md:flex-row items-start md:items-center gap-6">
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-500/30 shrink-0">
+            <span className="text-3xl">🏪</span>
+          </div>
+          <div className="flex-1">
+            <h3 className="text-xl md:text-2xl font-extrabold text-slate-900 dark:text-white">É proprietário de uma farmácia?</h3>
+            <p className="mt-1 text-sm text-slate-600 dark:text-slate-300 max-w-xl">
+              Registe a sua farmácia na Vonamed e alcance mais clientes em Maputo. Gestão de stock em tempo real, reservas online e visibilidade no mapa.
+            </p>
+          </div>
+          <Link
+            to="/registar-farmacia"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-semibold rounded-xl hover:scale-105 transition shadow-md"
+          >
+            Registar farmácia <ArrowRight className="w-4 h-4" />
+          </Link>
         </div>
       </section>
     </div>

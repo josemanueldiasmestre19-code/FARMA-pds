@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Pill, Store, Plus, Pencil, Trash2, X, Save, Shield } from 'lucide-react'
+import { Pill, Store, Plus, Pencil, Trash2, X, Save, Shield, Inbox } from 'lucide-react'
 import Button from '../components/ui/Button.jsx'
 import Modal from '../components/ui/Modal.jsx'
+import AdminApplications from '../components/AdminApplications.jsx'
 import { supabase } from '../lib/supabase.js'
 import { useData } from '../context/DataContext.jsx'
 import { useI18n } from '../context/I18nContext.jsx'
@@ -19,6 +20,7 @@ export default function Admin() {
   const [saving, setSaving] = useState(false)
 
   const TABS = [
+    { id: 'applications', label: 'Pedidos', icon: Inbox },
     { id: 'medicines', label: t('admin_medicines'), icon: Pill },
     { id: 'pharmacies', label: t('admin_pharmacies'), icon: Store },
   ]
@@ -105,14 +107,20 @@ export default function Admin() {
               }`}
             >
               <Icon className="w-4 h-4" /> {tb.label}
-              <span className={`text-xs px-2 py-0.5 rounded-full ${isActive ? 'bg-white/20' : 'bg-slate-100 dark:bg-slate-800'}`}>
-                {tab === tb.id ? items.length : (tb.id === 'medicines' ? medicines.length : pharmacies.length)}
-              </span>
+              {tb.id !== 'applications' && (
+                <span className={`text-xs px-2 py-0.5 rounded-full ${isActive ? 'bg-white/20' : 'bg-slate-100 dark:bg-slate-800'}`}>
+                  {tb.id === 'medicines' ? medicines.length : pharmacies.length}
+                </span>
+              )}
             </button>
           )
         })}
       </div>
 
+      {tab === 'applications' ? (
+        <AdminApplications />
+      ) : (
+      <>
       {/* Actions */}
       <div className="flex items-center justify-between mb-4">
         <h2 className="font-bold text-slate-900 dark:text-white">{tabCfg.label}</h2>
@@ -158,6 +166,8 @@ export default function Admin() {
           </div>
         )}
       </div>
+      </>
+      )}
 
       {/* Modal */}
       <Modal open={!!modal} onClose={close} title={modal?.item?.id ? t('admin_edit') : t('admin_create_new')}>

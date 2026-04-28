@@ -16,6 +16,7 @@ import Register from './pages/Register.jsx'
 import MyReservations from './pages/MyReservations.jsx'
 import Profile from './pages/Profile.jsx'
 import Admin from './pages/Admin.jsx'
+import PharmacyRegistration from './pages/PharmacyRegistration.jsx'
 import NotFound from './pages/NotFound.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
 import AdminRoute from './components/AdminRoute.jsx'
@@ -54,6 +55,7 @@ function AnimatedRoutes() {
         <Route path="/reservas" element={<ProtectedRoute><PageWrapper><MyReservations /></PageWrapper></ProtectedRoute>} />
         <Route path="/perfil" element={<ProtectedRoute><PageWrapper><Profile /></PageWrapper></ProtectedRoute>} />
         <Route path="/admin" element={<AdminRoute><PageWrapper><Admin /></PageWrapper></AdminRoute>} />
+        <Route path="/registar-farmacia" element={<ProtectedRoute><PageWrapper><PharmacyRegistration /></PageWrapper></ProtectedRoute>} />
         <Route path="*" element={<PageWrapper><NotFound /></PageWrapper>} />
       </Routes>
     </AnimatePresence>
