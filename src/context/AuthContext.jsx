@@ -62,9 +62,11 @@ export function AuthProvider({ children }) {
   }
 
   const isAdmin = user?.app_metadata?.role === 'admin'
+  const pharmacyId = user?.app_metadata?.pharmacy_id ?? null
+  const isPharmacyStaff = isAdmin || pharmacyId != null
 
   return (
-    <AuthContext.Provider value={{ user, loading, isAdmin, register, login, logout, updateProfile, updatePassword }}>
+    <AuthContext.Provider value={{ user, loading, isAdmin, isPharmacyStaff, pharmacyId, register, login, logout, updateProfile, updatePassword }}>
       {children}
     </AuthContext.Provider>
   )

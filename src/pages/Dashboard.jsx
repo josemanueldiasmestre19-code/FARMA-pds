@@ -1,22 +1,31 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Package, TrendingUp, AlertCircle, CheckCircle2, Store } from 'lucide-react'
 import { useData } from '../context/DataContext.jsx'
+import { useAuth } from '../context/AuthContext.jsx'
 import { supabase } from '../lib/supabase.js'
 import { useI18n } from '../context/I18nContext.jsx'
 
 export default function Dashboard() {
   const { pharmacies, medicines, loading: dataLoading } = useData()
+  const { isAdmin, pharmacyId } = useAuth()
   const { t } = useI18n()
   const [selectedId, setSelectedId] = useState(null)
   const [stocks, setStocks] = useState({})
 
+  // Pessoal de farmácia só vê a sua; admin vê todas
+  const accessiblePharmacies = useMemo(() => {
+    if (isAdmin) return pharmacies
+    if (pharmacyId != null) return pharmacies.filter((p) => p.id === pharmacyId)
+    return []
+  }, [pharmacies, isAdmin, pharmacyId])
+
   // Inicializar quando os dados carregam
   useEffect(() => {
-    if (pharmacies.length > 0 && !selectedId) {
-      setSelectedId(pharmacies[0].id)
+    if (accessiblePharmacies.length > 0 && !selectedId) {
+      setSelectedId(accessiblePharmacies[0].id)
       setStocks(Object.fromEntries(pharmacies.map((p) => [p.id, { ...p.stock }])))
     }
-  }, [pharmacies, selectedId])
+  }, [accessiblePharmacies, pharmacies, selectedId])
 
   if (dataLoading || !selectedId) {
     return (
@@ -82,15 +91,21 @@ export default function Dashboard() {
         </div>
         <div className="flex items-center gap-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 shadow-sm">
           <Store className="w-4 h-4 text-brand-600" />
-          <select
-            value={selectedId}
-            onChange={(e) => setSelectedId(Number(e.target.value))}
-            className="bg-transparent outline-none text-sm font-semibold text-slate-800 dark:text-slate-200 pr-2"
-          >
-            {pharmacies.map((p) => (
-              <option key={p.id} value={p.id}>{p.name}</option>
-            ))}
-          </select>
+          {accessiblePharmacies.length > 1 ? (
+            <select
+              value={selectedId}
+              onChange={(e) => setSelectedId(Number(e.target.value))}
+              className="bg-transparent outline-none text-sm font-semibold text-slate-800 dark:text-slate-200 pr-2"
+            >
+              {accessiblePharmacies.map((p) => (
+                <option key={p.id} value={p.id}>{p.name}</option>
+              ))}
+            </select>
+          ) : (
+            <span className="text-sm font-semibold text-slate-800 dark:text-slate-200 pr-2">
+              {pharmacy?.name}
+            </span>
+          )}
         </div>
       </div>
 

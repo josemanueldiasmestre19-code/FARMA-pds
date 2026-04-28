@@ -220,6 +220,7 @@ export const translations = {
     admin_removed: 'Removido!',
     admin_delete_confirm: 'Apagar "{name}"? Esta acção é irreversível.',
     admin_access_denied: 'Acesso restrito a administradores',
+    staff_access_denied: 'Acesso restrito ao pessoal das farmácias',
 
     // Footer
     footer_tagline: 'A plataforma digital que liga os moçambicanos aos medicamentos disponíveis nas farmácias de Maputo, em tempo real.',
@@ -484,6 +485,7 @@ export const translations = {
     admin_removed: 'Removed!',
     admin_delete_confirm: 'Delete "{name}"? This action cannot be undone.',
     admin_access_denied: 'Access restricted to administrators',
+    staff_access_denied: 'Access restricted to pharmacy staff',
 
     // Footer
     footer_tagline: 'The digital platform connecting Mozambicans to medicines available at pharmacies in Maputo, in real-time.',

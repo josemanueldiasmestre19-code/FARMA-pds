@@ -10,7 +10,7 @@ import { useI18n } from '../context/I18nContext.jsx'
 export default function Navbar() {
   const [open, setOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
-  const { user, isAdmin, logout } = useAuth()
+  const { user, isAdmin, isPharmacyStaff, logout } = useAuth()
   const { theme, toggleTheme } = useTheme()
   const { lang, toggleLang, t } = useI18n()
   const navigate = useNavigate()
@@ -20,7 +20,7 @@ export default function Navbar() {
     { to: '/', label: t('nav_home') },
     { to: '/pesquisa', label: t('nav_search') },
     { to: '/mapa', label: t('nav_map') },
-    { to: '/dashboard', label: t('nav_dashboard') },
+    ...(isPharmacyStaff ? [{ to: '/dashboard', label: t('nav_dashboard') }] : []),
   ]
 
   const userName = user?.user_metadata?.name || user?.email?.split('@')[0] || ''
