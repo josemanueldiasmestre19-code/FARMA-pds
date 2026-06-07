@@ -27,6 +27,7 @@ import { ReservationsProvider } from './context/ReservationsContext.jsx'
 import { DataProvider, useData } from './context/DataContext.jsx'
 import { ThemeProvider } from './context/ThemeContext.jsx'
 import { I18nProvider } from './context/I18nContext.jsx'
+import { NotificationsProvider } from './context/NotificationsContext.jsx'
 
 function PageWrapper({ children }) {
   return (
@@ -106,7 +107,9 @@ export default function App() {
         <AuthProvider>
           <DataProvider>
             <ReservationsProvider>
-              <AppContent />
+              <NotificationsProvider>
+                <AppContent />
+              </NotificationsProvider>
             </ReservationsProvider>
           </DataProvider>
         </AuthProvider>

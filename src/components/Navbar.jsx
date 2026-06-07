@@ -6,6 +6,7 @@ import toast from 'react-hot-toast'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useTheme } from '../context/ThemeContext.jsx'
 import { useI18n } from '../context/I18nContext.jsx'
+import NotificationBell from './NotificationBell.jsx'
 
 export default function Navbar() {
   const [open, setOpen] = useState(false)
@@ -98,6 +99,7 @@ export default function Navbar() {
 
           <LangToggle className="ml-1" />
           <ThemeToggle />
+          {user && <NotificationBell />}
 
           {user ? (
             <div className="relative ml-2" ref={dropdownRef}>
@@ -159,6 +161,7 @@ export default function Navbar() {
 
         {/* Mobile buttons */}
         <div className="flex items-center gap-1 md:hidden">
+          {user && <NotificationBell />}
           <LangToggle />
           <ThemeToggle />
           <button className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition text-slate-700 dark:text-slate-200" onClick={() => setOpen(!open)}>

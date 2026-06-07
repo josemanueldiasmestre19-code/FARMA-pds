@@ -249,6 +249,13 @@ export const translations = {
     // Protected Route
     protected_signin_required: 'Precisa de iniciar sessão para aceder a esta página',
 
+    // Notifications
+    notif_title: 'Notificações',
+    notif_empty: 'Sem notificações',
+    notif_mark_all_read: 'Marcar todas como lidas',
+    notif_clear_all: 'Limpar tudo',
+    notif_remove: 'Remover',
+
     // Common
     common_reserve: 'Reservar',
     common_cancel: 'Cancelar',
@@ -514,6 +521,13 @@ export const translations = {
 
     // Protected Route
     protected_signin_required: 'You need to sign in to access this page',
+
+    // Notifications
+    notif_title: 'Notifications',
+    notif_empty: 'No notifications',
+    notif_mark_all_read: 'Mark all as read',
+    notif_clear_all: 'Clear all',
+    notif_remove: 'Remove',
 
     // Common
     common_reserve: 'Reserve',
