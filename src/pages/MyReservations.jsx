@@ -16,15 +16,16 @@ export default function MyReservations() {
   const [qrReservation, setQrReservation] = useState(null)
 
   const TABS = [
-    { id: 'active', label: t('reservations_tab_active'), status: ['pendente'], icon: Clock, color: 'amber' },
+    { id: 'active', label: t('reservations_tab_active'), status: ['pendente', 'aprovada'], icon: Clock, color: 'amber' },
     { id: 'completed', label: t('reservations_tab_completed'), status: ['concluida'], icon: CheckCircle2, color: 'emerald' },
     { id: 'cancelled', label: t('reservations_tab_cancelled'), status: ['cancelada'], icon: XCircle, color: 'rose' },
   ]
 
   const STATUS_CONFIG = {
-    pendente: { label: t('status_pending'), color: 'bg-amber-100 text-amber-700' },
-    concluida: { label: t('status_completed'), color: 'bg-emerald-100 text-emerald-700' },
-    cancelada: { label: t('status_cancelled'), color: 'bg-rose-100 text-rose-700' },
+    pendente: { label: t('status_pending'), color: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' },
+    aprovada: { label: t('status_approved'), color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' },
+    concluida: { label: t('status_completed'), color: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300' },
+    cancelada: { label: t('status_cancelled'), color: 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-300' },
   }
 
   const filtered = useMemo(() => {
@@ -33,7 +34,7 @@ export default function MyReservations() {
   }, [reservations, activeTab])
 
   const counts = useMemo(() => ({
-    active: reservations.filter((r) => r.status === 'pendente').length,
+    active: reservations.filter((r) => r.status === 'pendente' || r.status === 'aprovada').length,
     completed: reservations.filter((r) => r.status === 'concluida').length,
     cancelled: reservations.filter((r) => r.status === 'cancelada').length,
   }), [reservations])
@@ -147,7 +148,7 @@ export default function MyReservations() {
                       <div className="font-extrabold text-slate-900 dark:text-white">{r.price} MT</div>
                     </div>
                     <div className="flex items-center gap-1.5 flex-wrap justify-end">
-                      {r.status === 'pendente' && (
+                      {(r.status === 'pendente' || r.status === 'aprovada') && (
                         <>
                           <button
                             onClick={() => setQrReservation(r)}
@@ -157,9 +158,6 @@ export default function MyReservations() {
                             <QrCode className="w-3.5 h-3.5" />
                             <span className="hidden sm:inline">{t('qr_show')}</span>
                           </button>
-                          <Button variant="secondary" size="sm" onClick={() => handleComplete(r.id)} title="Marcar como concluída">
-                            <CheckCircle2 className="w-3.5 h-3.5" />
-                          </Button>
                           <Button variant="danger" size="sm" onClick={() => handleCancel(r.id)} title="Cancelar">
                             <XCircle className="w-3.5 h-3.5" />
                           </Button>

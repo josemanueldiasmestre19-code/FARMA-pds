@@ -129,6 +129,7 @@ export const translations = {
     reservations_completed_toast: 'Reserva marcada como concluída',
     reservations_removed_toast: 'Reserva removida do histórico',
     status_pending: 'Pendente',
+    status_approved: 'Aprovada',
     status_completed: 'Concluída',
     status_cancelled: 'Cancelada',
 
@@ -394,6 +395,7 @@ export const translations = {
     reservations_completed_toast: 'Reservation marked as completed',
     reservations_removed_toast: 'Reservation removed from history',
     status_pending: 'Pending',
+    status_approved: 'Approved',
     status_completed: 'Completed',
     status_cancelled: 'Cancelled',
 
