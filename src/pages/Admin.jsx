@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Pill, Store, Plus, Pencil, Trash2, X, Save, Shield, Inbox } from 'lucide-react'
+import { Pill, Store, Plus, Pencil, Trash2, X, Save, Shield, Inbox, Wallet } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import Button from '../components/ui/Button.jsx'
 import Modal from '../components/ui/Modal.jsx'
 import AdminApplications from '../components/AdminApplications.jsx'
@@ -85,10 +86,16 @@ export default function Admin() {
         <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center shadow-lg shadow-brand-500/30">
           <Shield className="w-6 h-6 text-white" />
         </div>
-        <div>
+        <div className="flex-1">
           <div className="text-xs uppercase tracking-wider text-brand-600 dark:text-brand-400 font-semibold">{t('admin_panel')}</div>
           <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white">{t('admin_title')}</h1>
         </div>
+        <Link
+          to="/admin/financas"
+          className="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-sm font-bold rounded-xl hover:scale-105 transition shadow-md"
+        >
+          <Wallet className="w-4 h-4" /> Finanças
+        </Link>
       </div>
 
       {/* Tabs */}

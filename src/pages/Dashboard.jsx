@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { Package, TrendingUp, AlertCircle, CheckCircle2, Store, Inbox } from 'lucide-react'
+import { Package, TrendingUp, AlertCircle, CheckCircle2, Store, Inbox, Wallet } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useData } from '../context/DataContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
@@ -89,12 +89,20 @@ export default function Dashboard() {
         <div>
           <div className="text-xs uppercase tracking-wider text-brand-600 font-semibold">{t('dashboard_panel')}</div>
           <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white">{t('dashboard_title')}</h1>
-          <Link
-            to="/dashboard/reservas"
-            className="inline-flex items-center gap-2 mt-3 px-4 py-2 bg-blue-500 text-white text-sm font-semibold rounded-xl hover:bg-blue-600 shadow-md shadow-blue-500/30 transition"
-          >
-            <Inbox className="w-4 h-4" /> Ver reservas recebidas
-          </Link>
+          <div className="flex flex-wrap gap-2 mt-3">
+            <Link
+              to="/dashboard/reservas"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500 text-white text-sm font-semibold rounded-xl hover:bg-blue-600 shadow-md shadow-blue-500/30 transition"
+            >
+              <Inbox className="w-4 h-4" /> Reservas recebidas
+            </Link>
+            <Link
+              to="/dashboard/carteira"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 shadow-md shadow-brand-500/30 transition"
+            >
+              <Wallet className="w-4 h-4" /> Minha carteira
+            </Link>
+          </div>
         </div>
         <div className="flex items-center gap-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 shadow-sm">
           <Store className="w-4 h-4 text-brand-600" />

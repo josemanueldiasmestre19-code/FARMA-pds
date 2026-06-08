@@ -249,6 +249,35 @@ export const translations = {
     // Protected Route
     protected_signin_required: 'Precisa de iniciar sessão para aceder a esta página',
 
+    // Wallet
+    wallet_title: 'Minha Carteira',
+    wallet_balance: 'Saldo disponível',
+    wallet_earned: 'Receita total',
+    wallet_withdrawn: 'Levantado',
+    wallet_withdraw: 'Levantar saldo',
+    wallet_transactions: 'Histórico de transacções',
+    wallet_empty: 'Ainda sem movimentos. Os pagamentos das reservas aparecerão aqui.',
+    wallet_amount: 'Valor a levantar',
+    wallet_to: 'Levantar para',
+    wallet_insufficient: 'Saldo insuficiente',
+    wallet_invalid: 'Valor inválido',
+    wallet_processing: 'A processar...',
+
+    // Payment
+    pay_method: 'Método de pagamento',
+    pay_breakdown_price: 'Preço do medicamento',
+    pay_breakdown_commission: 'Comissão Vonamed',
+    pay_total: 'Total a pagar',
+    pay_pay: 'Pagar',
+    pay_processing: 'A processar pagamento...',
+    pay_processing_hint: 'Aguarde, não feche esta janela',
+    pay_done: 'Pagamento concluído!',
+    pay_done_toast: 'Pagamento confirmado!',
+    pay_via: 'via',
+    pay_show_qr: 'Ver QR da reserva',
+    pay_show_receipt: 'Ver recibo',
+    pay_receipt: 'Recibo digital',
+
     // Notifications
     notif_title: 'Notificações',
     notif_empty: 'Sem notificações',
@@ -521,6 +550,35 @@ export const translations = {
 
     // Protected Route
     protected_signin_required: 'You need to sign in to access this page',
+
+    // Wallet
+    wallet_title: 'My Wallet',
+    wallet_balance: 'Available balance',
+    wallet_earned: 'Total earned',
+    wallet_withdrawn: 'Withdrawn',
+    wallet_withdraw: 'Withdraw balance',
+    wallet_transactions: 'Transaction history',
+    wallet_empty: 'No movements yet. Reservation payments will appear here.',
+    wallet_amount: 'Amount to withdraw',
+    wallet_to: 'Withdraw to',
+    wallet_insufficient: 'Insufficient balance',
+    wallet_invalid: 'Invalid amount',
+    wallet_processing: 'Processing...',
+
+    // Payment
+    pay_method: 'Payment method',
+    pay_breakdown_price: 'Medicine price',
+    pay_breakdown_commission: 'Vonamed commission',
+    pay_total: 'Total to pay',
+    pay_pay: 'Pay',
+    pay_processing: 'Processing payment...',
+    pay_processing_hint: 'Please wait, do not close this window',
+    pay_done: 'Payment completed!',
+    pay_done_toast: 'Payment confirmed!',
+    pay_via: 'via',
+    pay_show_qr: 'View reservation QR',
+    pay_show_receipt: 'View receipt',
+    pay_receipt: 'Digital receipt',
 
     // Notifications
     notif_title: 'Notifications',
