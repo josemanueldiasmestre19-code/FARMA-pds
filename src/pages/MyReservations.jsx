@@ -8,12 +8,19 @@ import { useI18n } from '../context/I18nContext.jsx'
 import EmptyState from '../components/ui/EmptyState.jsx'
 import Button from '../components/ui/Button.jsx'
 import ReservationQR from '../components/ReservationQR.jsx'
+import Receipt from '../components/Receipt.jsx'
+import { formatMT, formatDateTime } from '../lib/format.js'
+import usePageTitle from '../hooks/usePageTitle.js'
+import { Loader2, RefreshCw, Receipt as ReceiptIcon } from 'lucide-react'
 
 export default function MyReservations() {
-  const { reservations, cancelReservation, completeReservation, deleteReservation } = useReservations()
+  const { reservations, loading, error, refetch, cancelReservation, deleteReservation } = useReservations()
   const { t } = useI18n()
+  usePageTitle(t('reservations_title'))
   const [activeTab, setActiveTab] = useState('active')
   const [qrReservation, setQrReservation] = useState(null)
+  const [receiptReservation, setReceiptReservation] = useState(null)
+  const [busyId, setBusyId] = useState(null)
 
   const TABS = [
     { id: 'active', label: t('reservations_tab_active'), status: ['pendente', 'aprovada'], icon: Clock, color: 'amber' },
@@ -40,18 +47,21 @@ export default function MyReservations() {
   }), [reservations])
 
   const handleCancel = async (id) => {
-    await cancelReservation(id)
-    toast.success(t('reservations_cancelled_toast'))
-  }
-
-  const handleComplete = async (id) => {
-    await completeReservation(id)
-    toast.success(t('reservations_completed_toast'))
+    if (busyId) return
+    setBusyId(id)
+    const res = await cancelReservation(id)
+    setBusyId(null)
+    if (res.ok) toast.success(t('reservations_cancelled_toast'))
+    else toast.error(res.error)
   }
 
   const handleDelete = async (id) => {
-    await deleteReservation(id)
-    toast.success(t('reservations_removed_toast'))
+    if (busyId) return
+    setBusyId(id)
+    const res = await deleteReservation(id)
+    setBusyId(null)
+    if (res.ok) toast.success(t('reservations_removed_toast'))
+    else toast.error(res.error)
   }
 
   return (
@@ -89,7 +99,12 @@ export default function MyReservations() {
       </div>
 
       {/* Content */}
-      {filtered.length === 0 ? (
+      {loading && reservations.length === 0 ? (
+        <div className="py-16 text-center" role="status"><Loader2 className="w-7 h-7 animate-spin text-brand-600 mx-auto" /></div>
+      ) : error && reservations.length === 0 ? (
+        <EmptyState icon={XCircle} title="Não foi possível carregar as reservas" description={error}
+          action={<Button onClick={refetch}><RefreshCw className="w-4 h-4" /> Tentar novamente</Button>} />
+      ) : filtered.length === 0 ? (
         <EmptyState
           icon={ShoppingBag}
           title={
@@ -112,7 +127,7 @@ export default function MyReservations() {
         />
       ) : (
         <div className="space-y-3">
-          <AnimatePresence mode="popLayout">
+          <AnimatePresence initial={false}>
             {filtered.map((r) => {
               const statusCfg = STATUS_CONFIG[r.status] || STATUS_CONFIG.pendente
               return (
@@ -140,12 +155,13 @@ export default function MyReservations() {
                     </div>
                     <div className="text-xs text-slate-400 dark:text-slate-500 flex items-center gap-1 mt-0.5">
                       <Calendar className="w-3 h-3 shrink-0" />
-                      {new Date(r.created_at).toLocaleString('pt-PT')}
+                      {formatDateTime(r.created_at)}
                     </div>
                   </div>
                   <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
                     <div className="text-right">
-                      <div className="font-extrabold text-slate-900 dark:text-white">{r.price} MT</div>
+                      <div className="font-extrabold text-slate-900 dark:text-white">{formatMT(r.total_paid || r.price)}</div>
+                      {r.payment_status === 'refunded' && <div className="text-[10px] text-slate-400">reembolsado</div>}
                     </div>
                     <div className="flex items-center gap-1.5 flex-wrap justify-end">
                       {(r.status === 'pendente' || r.status === 'aprovada') && (
@@ -158,15 +174,33 @@ export default function MyReservations() {
                             <QrCode className="w-3.5 h-3.5" />
                             <span className="hidden sm:inline">{t('qr_show')}</span>
                           </button>
-                          <Button variant="danger" size="sm" onClick={() => handleCancel(r.id)} title="Cancelar">
+                          <button
+                            onClick={() => setReceiptReservation(r)}
+                            title={t('pay_show_receipt')}
+                            aria-label={t('pay_show_receipt')}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-semibold hover:bg-slate-200 dark:hover:bg-slate-700 transition"
+                          >
+                            <ReceiptIcon className="w-3.5 h-3.5" />
+                          </button>
+                          <Button variant="danger" size="sm" onClick={() => handleCancel(r.id)} title="Cancelar reserva" aria-label="Cancelar reserva" disabled={busyId === r.id}>
                             <XCircle className="w-3.5 h-3.5" />
                           </Button>
                         </>
                       )}
                       {(r.status === 'cancelada' || r.status === 'concluida') && (
-                        <Button variant="danger" size="sm" onClick={() => handleDelete(r.id)} title="Remover do histórico">
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </Button>
+                        <>
+                          <button
+                            onClick={() => setReceiptReservation(r)}
+                            title={t('pay_show_receipt')}
+                            aria-label={t('pay_show_receipt')}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-semibold hover:bg-slate-200 dark:hover:bg-slate-700 transition"
+                          >
+                            <ReceiptIcon className="w-3.5 h-3.5" />
+                          </button>
+                          <Button variant="danger" size="sm" onClick={() => handleDelete(r.id)} title="Remover do histórico" aria-label="Remover do histórico" disabled={busyId === r.id}>
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </Button>
+                        </>
                       )}
                     </div>
                   </div>
@@ -181,6 +215,11 @@ export default function MyReservations() {
         open={!!qrReservation}
         onClose={() => setQrReservation(null)}
         reservation={qrReservation}
+      />
+      <Receipt
+        open={!!receiptReservation}
+        onClose={() => setReceiptReservation(null)}
+        reservation={receiptReservation}
       />
     </div>
   )

@@ -1,10 +1,19 @@
 import { QRCodeSVG } from 'qrcode.react'
+import { useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Pill, MapPin, Calendar, Hash, ShieldCheck } from 'lucide-react'
 import { useI18n } from '../context/I18nContext.jsx'
+import { formatMT, formatShortDateTime, shortId as toShortId } from '../lib/format.js'
 
 export default function ReservationQR({ open, onClose, reservation }) {
-  const { t, lang } = useI18n()
+  const { t } = useI18n()
+
+  useEffect(() => {
+    if (!open) return
+    const onKey = (e) => { if (e.key === 'Escape') { e.stopPropagation(); onClose?.() } }
+    document.addEventListener('keydown', onKey, true)
+    return () => document.removeEventListener('keydown', onKey, true)
+  }, [open, onClose])
 
   if (!reservation) return null
 
@@ -12,14 +21,8 @@ export default function ReservationQR({ open, onClose, reservation }) {
   const origin = typeof window !== 'undefined' ? window.location.origin : ''
   const qrValue = `${origin}/reserva/${reservation.id}`
 
-  const shortId = reservation.id.slice(0, 8).toUpperCase()
-  const createdDate = new Date(reservation.created_at).toLocaleString(lang === 'pt' ? 'pt-PT' : 'en-GB', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
+  const shortId = toShortId(reservation.id)
+  const createdDate = formatShortDateTime(reservation.created_at)
 
   return (
     <AnimatePresence>
@@ -30,6 +33,7 @@ export default function ReservationQR({ open, onClose, reservation }) {
           exit={{ opacity: 0 }}
           className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm"
           onClick={onClose}
+          data-overlay
         >
           <motion.div
             initial={{ y: 30, opacity: 0, scale: 0.95 }}
@@ -43,6 +47,7 @@ export default function ReservationQR({ open, onClose, reservation }) {
             <div className="bg-gradient-to-br from-brand-600 to-emerald-700 p-5 text-white relative">
               <button
                 onClick={onClose}
+                aria-label="Fechar"
                 className="absolute top-3 right-3 p-1.5 rounded-lg text-white/80 hover:text-white hover:bg-white/10 transition"
               >
                 <X className="w-5 h-5" />
@@ -84,7 +89,7 @@ export default function ReservationQR({ open, onClose, reservation }) {
               <div className="flex items-center gap-2 text-sm">
                 <MapPin className="w-4 h-4 text-brand-600 shrink-0" />
                 <span className="text-slate-500 dark:text-slate-400 text-xs">{t('qr_price')}:</span>
-                <span className="font-bold text-slate-900 dark:text-white ml-auto">{reservation.price} MT</span>
+                <span className="font-bold text-slate-900 dark:text-white ml-auto">{formatMT(reservation.total_paid || reservation.price)}</span>
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <Calendar className="w-4 h-4 text-brand-600 shrink-0" />

@@ -230,7 +230,7 @@ export default function PharmacyReviews({ pharmacyId }) {
         </div>
       ) : (
         <div className="space-y-3">
-          <AnimatePresence mode="popLayout">
+          <AnimatePresence initial={false}>
             {reviews.map((r) => (
               <motion.div
                 key={r.id}

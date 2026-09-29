@@ -1,15 +1,20 @@
+import { useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Printer, CheckCircle2, Pill } from 'lucide-react'
-import { formatMT } from '../lib/commission.js'
+import { formatMT, formatDateTime, shortId as toShortId } from '../lib/format.js'
 
 export default function Receipt({ open, onClose, reservation }) {
+  useEffect(() => {
+    if (!open) return
+    const onKey = (e) => { if (e.key === 'Escape') { e.stopPropagation(); onClose?.() } }
+    document.addEventListener('keydown', onKey, true)
+    return () => document.removeEventListener('keydown', onKey, true)
+  }, [open, onClose])
+
   if (!reservation) return null
 
-  const shortId = reservation.id.slice(0, 8).toUpperCase()
-  const date = new Date(reservation.created_at || Date.now()).toLocaleString('pt-PT', {
-    day: '2-digit', month: '2-digit', year: 'numeric',
-    hour: '2-digit', minute: '2-digit',
-  })
+  const shortId = toShortId(reservation.id)
+  const date = formatDateTime(reservation.created_at || new Date().toISOString())
 
   const methodLabel = {
     mpesa: 'M-Pesa',
@@ -29,6 +34,7 @@ export default function Receipt({ open, onClose, reservation }) {
           exit={{ opacity: 0 }}
           className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm print:bg-white print:p-0 print:static print:block"
           onClick={onClose}
+          data-overlay
         >
           <motion.div
             initial={{ y: 30, opacity: 0, scale: 0.95 }}
@@ -41,6 +47,7 @@ export default function Receipt({ open, onClose, reservation }) {
           >
             <button
               onClick={onClose}
+              aria-label="Fechar"
               className="absolute top-3 right-3 p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 z-10 print:hidden"
             >
               <X className="w-5 h-5" />
@@ -58,7 +65,7 @@ export default function Receipt({ open, onClose, reservation }) {
             {/* Status badge */}
             <div className="-mt-5 flex justify-center">
               <span className="bg-emerald-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-md uppercase tracking-wider">
-                Pago
+                {reservation.payment_status === 'refunded' ? 'Reembolsado' : 'Pago'}
               </span>
             </div>
 
@@ -95,7 +102,7 @@ export default function Receipt({ open, onClose, reservation }) {
 
             {/* Footer */}
             <div className="bg-slate-50 px-6 py-4 text-center text-[10px] text-slate-500 tracking-wide border-t border-slate-100">
-              ESTE RECIBO É VÁLIDO COMO COMPROVATIVO DE PAGAMENTO<br/>
+              COMPROVATIVO DE PAGAMENTO • AMBIENTE DE SIMULAÇÃO<br/>
               vonamed.mz • Maputo, Moçambique
             </div>
 

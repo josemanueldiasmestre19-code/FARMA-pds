@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, useCallback } from 'react'
 import { supabase } from '../lib/supabase.js'
 import { useAuth } from './AuthContext.jsx'
+import { formatMT } from '../lib/format.js'
 
 const NotificationsContext = createContext(null)
 const MAX_NOTIFICATIONS = 50
@@ -19,8 +20,15 @@ export function NotificationsProvider({ children }) {
     }
     try {
       const stored = localStorage.getItem(storageKey)
-      setNotifications(stored ? JSON.parse(stored) : [])
+      const parsed = stored ? JSON.parse(stored) : []
+      // localStorage pode estar corrompido ou com formato antigo
+      setNotifications(
+        Array.isArray(parsed)
+          ? parsed.filter((n) => n && typeof n === 'object' && typeof n.id === 'string' && n.title)
+          : []
+      )
     } catch {
+      try { localStorage.removeItem(storageKey) } catch {}
       setNotifications([])
     }
   }, [storageKey])
@@ -148,7 +156,7 @@ export function NotificationsProvider({ children }) {
           addNotification({
             type: 'new_reservation',
             title: 'Nova reserva recebida',
-            body: `${payload.new.medicine_name} • ${payload.new.price} MT`,
+            body: `${payload.new.medicine_name} • ${formatMT(payload.new.price)}`,
             link: '/dashboard/reservas',
             reservationId: payload.new.id,
           })
@@ -172,7 +180,7 @@ export function NotificationsProvider({ children }) {
             addNotification({
               type: 'reservation_cancelled_by_client',
               title: 'Reserva cancelada pelo cliente',
-              body: `${payload.new.medicine_name} • ${payload.new.price} MT`,
+              body: `${payload.new.medicine_name} • ${formatMT(payload.new.price)}`,
               link: '/dashboard/reservas',
               reservationId: payload.new.id,
             })

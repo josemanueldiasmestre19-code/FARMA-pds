@@ -177,7 +177,7 @@ export default function PharmacyReservations() {
         </div>
       ) : (
         <div className="space-y-3">
-          <AnimatePresence mode="popLayout">
+          <AnimatePresence initial={false}>
             {filtered.map((r) => (
               <ReservationCard
                 key={r.id}
