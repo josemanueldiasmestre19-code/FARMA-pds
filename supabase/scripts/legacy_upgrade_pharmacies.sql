@@ -1,3 +1,6 @@
+-- LEGADO (2026-04-17). Script DESTRUTIVO de dados: apaga reservas, avaliações e stock.
+-- Não faz parte das migrações. Usar supabase/seed.sql para dados de demonstração.
+
 -- Upgrade: Farmácias reais de Maputo com coordenadas correctas
 -- Corre este SQL no SQL Editor do Supabase
 -- ATENÇÃO: isto apaga as farmácias e stock antigos e insere novos

@@ -14,7 +14,7 @@ Para enviar de `notificacoes@vonamed.mz` em vez de `onboarding@resend.dev`:
 
 ## 2. Correr o SQL
 
-No SQL Editor do Supabase corre o ficheiro `supabase/add_email_notifications.sql`.
+No SQL Editor do Supabase corre o ficheiro `supabase/migrations/20260608000000_add_email_notifications.sql`.
 Adiciona a coluna `contact_email` e actualiza a função `approve_pharmacy_application`.
 
 Para farmácias **já existentes** define o email manualmente:

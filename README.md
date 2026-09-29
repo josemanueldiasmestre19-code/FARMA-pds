@@ -111,15 +111,11 @@ vonamed/
 │   │   └── mockData.js           # Dados simulados para fallback local
 │   ├── App.jsx                   # Rotas principais
 │   └── main.jsx                  # Entry point
-├── supabase/                     # Scripts SQL do esquema de base de dados
-│   ├── setup.sql                 # Esquema principal
-│   ├── add_pharmacy_applications.sql
-│   ├── add_reviews.sql
-│   ├── add_admin_policies.sql
-│   ├── upgrade_pharmacies.sql
-│   ├── restrict_dashboard_access.sql
-│   ├── enable_realtime.sql
-│   └── add_reservation_update_policy.sql
+├── supabase/
+│   ├── migrations/               # Migrações SQL por ordem cronológica (supabase db push)
+│   ├── seed.sql                  # Dados de demonstração (idempotente)
+│   ├── scripts/                  # Scripts SQL avulsos (legado, não correr em produção)
+│   └── functions/                # Edge Functions (send-reservation-email)
 ├── index.html
 ├── vite.config.js                # Configuração Vite + PWA
 ├── tailwind.config.js
