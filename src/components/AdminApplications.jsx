@@ -5,6 +5,8 @@ import { CheckCircle2, XCircle, Clock, Building2, MapPin, Phone, FileText, User,
 import Button from './ui/Button.jsx'
 import Modal from './ui/Modal.jsx'
 import { supabase } from '../lib/supabase.js'
+import { translateError } from '../lib/errors.js'
+import { formatDateTime } from '../lib/format.js'
 
 const STATUS_TABS = [
   { id: 'pending', label: 'Pendentes', icon: Clock, color: 'amber' },
@@ -36,10 +38,11 @@ export default function AdminApplications() {
 
   async function fetchApplications() {
     setLoading(true)
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('pharmacy_applications')
       .select('*')
       .order('created_at', { ascending: false })
+    if (error) toast.error(translateError(error.message))
     setApplications(data || [])
     setLoading(false)
   }
@@ -51,16 +54,19 @@ export default function AdminApplications() {
     rejected: applications.filter((a) => a.status === 'rejected').length,
   }
 
-  const approve = async (appId) => {
-    if (!confirm('Aprovar este pedido? Será criada uma nova farmácia e o utilizador receberá acesso.')) return
+  const [approveModal, setApproveModal] = useState(null)
+
+  const confirmApprove = async () => {
+    if (!approveModal || processing) return
     setProcessing(true)
-    const { error } = await supabase.rpc('approve_pharmacy_application', { app_id: appId })
+    const { error } = await supabase.rpc('approve_pharmacy_application', { app_id: approveModal.id })
     setProcessing(false)
     if (error) {
-      toast.error(error.message)
+      toast.error(translateError(error.message))
       return
     }
-    toast.success('Pedido aprovado! Farmácia criada.')
+    toast.success(`${approveModal.pharmacy_name} aprovada. O responsável já tem acesso ao dashboard.`)
+    setApproveModal(null)
   }
 
   const openReject = (app) => {
@@ -80,7 +86,7 @@ export default function AdminApplications() {
     })
     setProcessing(false)
     if (error) {
-      toast.error(error.message)
+      toast.error(translateError(error.message))
       return
     }
     toast.success('Pedido rejeitado')
@@ -116,7 +122,7 @@ export default function AdminApplications() {
       {/* List */}
       <div className="space-y-2">
         {loading ? (
-          <p className="text-sm text-slate-500 text-center py-8">A carregar...</p>
+          <p className="text-sm text-slate-500 text-center py-8" role="status">A carregar...</p>
         ) : filtered.length === 0 ? (
           <div className="bg-white dark:bg-slate-900 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 p-8 text-center text-sm text-slate-500 dark:text-slate-400">
             Nenhum pedido nesta categoria.
@@ -128,13 +134,30 @@ export default function AdminApplications() {
               app={a}
               isExpanded={expanded === a.id}
               onToggle={() => setExpanded(expanded === a.id ? null : a.id)}
-              onApprove={() => approve(a.id)}
+              onApprove={() => setApproveModal(a)}
               onReject={() => openReject(a)}
               processing={processing}
             />
           ))
         )}
       </div>
+
+      <Modal open={!!approveModal} onClose={() => setApproveModal(null)} title="Aprovar farmácia">
+        {approveModal && (
+          <div className="space-y-4">
+            <p className="text-sm text-slate-600 dark:text-slate-300">
+              Aprovar <strong>{approveModal.pharmacy_name}</strong>? Será criada a farmácia no mapa e
+              <strong> {approveModal.owner_name}</strong> recebe acesso imediato ao dashboard.
+            </p>
+            <div className="flex gap-2">
+              <Button variant="secondary" className="flex-1" onClick={() => setApproveModal(null)} disabled={processing}>Cancelar</Button>
+              <Button className="flex-1" onClick={confirmApprove} disabled={processing}>
+                <CheckCircle2 className="w-4 h-4" /> {processing ? 'A aprovar...' : 'Aprovar'}
+              </Button>
+            </div>
+          </div>
+        )}
+      </Modal>
 
       <Modal open={!!rejectModal} onClose={() => setRejectModal(null)} title="Rejeitar pedido">
         {rejectModal && (
@@ -188,7 +211,7 @@ function ApplicationCard({ app, isExpanded, onToggle, onApprove, onReject, proce
           <div className="flex items-center gap-2 flex-wrap">
             <h3 className="font-bold text-slate-900 dark:text-white truncate">{app.pharmacy_name}</h3>
             <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${statusColor}`}>
-              {app.status}
+              {{ pending: 'Pendente', approved: 'Aprovada', rejected: 'Rejeitada' }[app.status] || app.status}
             </span>
           </div>
           <div className="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">{app.address}</div>
@@ -209,7 +232,7 @@ function ApplicationCard({ app, isExpanded, onToggle, onApprove, onReject, proce
                 <Detail icon={Phone} label="Telefone" value={app.phone} />
                 <Detail icon={Calendar} label="Horário" value={app.hours} />
                 <Detail icon={FileText} label="NUIT" value={app.license_number} />
-                <Detail icon={MapPin} label="Coordenadas" value={`${app.lat?.toFixed(4)}, ${app.lng?.toFixed(4)}`} />
+                <Detail icon={MapPin} label="Coordenadas" value={`${Number(app.lat).toFixed(4)}, ${Number(app.lng).toFixed(4)}`} />
                 <Detail icon={User} label="Responsável" value={app.owner_name} />
                 <Detail icon={Phone} label="Tel. responsável" value={app.owner_phone} />
               </div>
@@ -220,7 +243,7 @@ function ApplicationCard({ app, isExpanded, onToggle, onApprove, onReject, proce
                 </div>
               )}
               <div className="text-xs text-slate-500 dark:text-slate-400">
-                Submetido: {new Date(app.created_at).toLocaleString('pt-PT')}
+                Submetido: {formatDateTime(app.created_at)}
               </div>
               {app.status === 'rejected' && app.rejection_reason && (
                 <div className="bg-rose-50 dark:bg-rose-900/20 rounded-lg p-2 text-xs text-rose-700 dark:text-rose-300">

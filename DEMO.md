@@ -36,6 +36,8 @@ supabase db query --linked -f supabase/seed.sql
 
 ## Antes de apresentar
 
+- **Fazer deploy da versão actual** (`git push`). O `vercel.json` novo corrige o 404 em links directos (`/reservas`, `/reserva/<id>` do QR) — sem ele, recarregar qualquer página em produção falha.
+- Confirmar em produção: abrir `https://farma-pds.vercel.app/reservas` directamente deve mostrar a app, não 404.
 - Confirmar que o projeto Supabase está activo: `supabase projects list` → `ACTIVE_HEALTHY`. Projectos gratuitos **pausam após ~7 dias sem uso**; abrir o dashboard e clicar *Restore* (2–5 min).
 - Abrir a app uma vez e fazer login para "aquecer".
 - Emails: enviados via Resend a partir de `onboarding@resend.dev` — só chegam ao email do dono da conta Resend. A app não depende deles (webhook assíncrono).

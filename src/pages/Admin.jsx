@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Pill, Store, Plus, Pencil, Trash2, X, Save, Shield, Inbox, Wallet } from 'lucide-react'
+import { Pill, Store, Plus, Pencil, Trash2, X, Save, Shield, Inbox, Wallet, Search } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import Button from '../components/ui/Button.jsx'
 import Modal from '../components/ui/Modal.jsx'
@@ -9,16 +9,22 @@ import AdminApplications from '../components/AdminApplications.jsx'
 import { supabase } from '../lib/supabase.js'
 import { useData } from '../context/DataContext.jsx'
 import { useI18n } from '../context/I18nContext.jsx'
+import { translateError } from '../lib/errors.js'
+import { formatMT, normalize } from '../lib/format.js'
+import usePageTitle from '../hooks/usePageTitle.js'
 
 const emptyMedicine = { name: '', category: '', price: '' }
 const emptyPharmacy = { name: '', address: '', phone: '', hours: '', lat: '', lng: '' }
 
 export default function Admin() {
-  const { medicines, pharmacies } = useData()
+  const { medicines, pharmacies, refetch } = useData()
   const { t } = useI18n()
-  const [tab, setTab] = useState('medicines')
+  usePageTitle(t('admin_panel'))
+  const [tab, setTab] = useState('applications')
   const [modal, setModal] = useState(null) // { type, item }
   const [saving, setSaving] = useState(false)
+  const [deleting, setDeleting] = useState(null) // { type, id, name }
+  const [filter, setFilter] = useState('')
 
   const TABS = [
     { id: 'applications', label: 'Pedidos', icon: Inbox },
@@ -35,6 +41,7 @@ export default function Admin() {
 
   const save = async (e) => {
     e.preventDefault()
+    if (saving) return
     setSaving(true)
 
     const isNew = !modal.item.id
@@ -57,26 +64,32 @@ export default function Admin() {
     setSaving(false)
 
     if (error) {
-      toast.error(error.message)
+      toast.error(translateError(error.message))
       return
     }
     toast.success(isNew ? t('admin_created') : t('admin_updated'))
     close()
-    window.location.reload() // recarrega dados do DataContext
+    refetch()
   }
 
-  const remove = async (type, id, name) => {
-    if (!confirm(t('admin_delete_confirm').replace('{name}', name))) return
-    const { error } = await supabase.from(type).delete().eq('id', id)
+  const confirmRemove = async () => {
+    if (!deleting || saving) return
+    setSaving(true)
+    const { error } = await supabase.from(deleting.type).delete().eq('id', deleting.id)
+    setSaving(false)
     if (error) {
-      toast.error(error.message)
+      toast.error(translateError(error.message))
       return
     }
     toast.success(t('admin_removed'))
-    window.location.reload()
+    setDeleting(null)
+    refetch()
   }
 
-  const items = tab === 'medicines' ? medicines : pharmacies
+  const q = normalize(filter)
+  const items = (tab === 'medicines' ? medicines : pharmacies).filter((i) =>
+    !q || normalize(i.name).includes(q) || normalize(i.category || i.address).includes(q)
+  )
   const tabCfg = TABS.find((t) => t.id === tab)
 
   return (
@@ -129,8 +142,13 @@ export default function Admin() {
       ) : (
       <>
       {/* Actions */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center gap-3 mb-4 flex-wrap">
         <h2 className="font-bold text-slate-900 dark:text-white">{tabCfg.label}</h2>
+        <div className="flex items-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 flex-1 min-w-[180px]">
+          <Search className="w-4 h-4 text-slate-400 shrink-0" />
+          <input type="search" aria-label="Filtrar" value={filter} onChange={(e) => setFilter(e.target.value)} placeholder="Filtrar..."
+            className="flex-1 px-2 bg-transparent outline-none text-sm text-slate-900 dark:text-slate-100 min-w-0" />
+        </div>
         <Button onClick={() => openCreate(tab)}>
           <Plus className="w-4 h-4" /> {t('admin_new')}
         </Button>
@@ -152,15 +170,15 @@ export default function Admin() {
                 <div className="font-semibold text-slate-900 dark:text-white truncate">{item.name}</div>
                 <div className="text-xs text-slate-500 dark:text-slate-400 truncate">
                   {tab === 'medicines'
-                    ? `${item.category} • ${item.price} MT`
+                    ? `${item.category} • ${formatMT(item.price)}`
                     : item.address}
                 </div>
               </div>
               <div className="flex items-center gap-1">
-                <Button size="sm" variant="secondary" onClick={() => openEdit(tab, item)}>
+                <Button size="sm" variant="secondary" onClick={() => openEdit(tab, item)} aria-label={`${t('admin_edit')} ${item.name}`}>
                   <Pencil className="w-3.5 h-3.5" />
                 </Button>
-                <Button size="sm" variant="danger" onClick={() => remove(tab, item.id, item.name)}>
+                <Button size="sm" variant="danger" onClick={() => setDeleting({ type: tab, id: item.id, name: item.name })} aria-label={`Apagar ${item.name}`}>
                   <Trash2 className="w-3.5 h-3.5" />
                 </Button>
               </div>
@@ -175,6 +193,19 @@ export default function Admin() {
       </div>
       </>
       )}
+
+      {/* Confirmação de remoção */}
+      <Modal open={!!deleting} onClose={() => setDeleting(null)} title="Apagar registo">
+        {deleting && (
+          <div className="space-y-4">
+            <p className="text-sm text-slate-600 dark:text-slate-300">{t('admin_delete_confirm').replace('{name}', deleting.name)}</p>
+            <div className="flex gap-2">
+              <Button variant="secondary" className="flex-1" onClick={() => setDeleting(null)} disabled={saving}>{t('common_cancel')}</Button>
+              <Button variant="danger" className="flex-1" onClick={confirmRemove} disabled={saving}><Trash2 className="w-4 h-4" /> Apagar</Button>
+            </div>
+          </div>
+        )}
+      </Modal>
 
       {/* Modal */}
       <Modal open={!!modal} onClose={close} title={modal?.item?.id ? t('admin_edit') : t('admin_create_new')}>
@@ -214,10 +245,12 @@ export default function Admin() {
 }
 
 function Field({ label, value, onChange, type = 'text', required, step }) {
+  const id = 'admin-' + label.replace(/\W+/g, '-').toLowerCase()
   return (
     <div>
-      <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">{label}</label>
+      <label htmlFor={id} className="text-xs font-semibold text-slate-700 dark:text-slate-300">{label}</label>
       <input
+        id={id}
         type={type}
         step={step}
         required={required}

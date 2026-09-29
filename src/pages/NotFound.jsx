@@ -2,9 +2,11 @@ import { Link } from 'react-router-dom'
 import { Home, ArrowLeft } from 'lucide-react'
 import Button from '../components/ui/Button.jsx'
 import { useI18n } from '../context/I18nContext.jsx'
+import usePageTitle from '../hooks/usePageTitle.js'
 
 export default function NotFound() {
   const { t } = useI18n()
+  usePageTitle(t('notfound_title'))
   return (
     <div className="min-h-[calc(100vh-200px)] flex items-center justify-center px-4 py-12">
       <div className="text-center max-w-md">

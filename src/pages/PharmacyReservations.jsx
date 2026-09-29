@@ -3,11 +3,15 @@ import { motion, AnimatePresence } from 'framer-motion'
 import toast from 'react-hot-toast'
 import {
   Inbox, CheckCircle2, XCircle, Clock, Package,
-  Calendar, Hash, Pill, Loader2, Search
+  Calendar, Hash, Pill, Loader2, Search, RefreshCw, User
 } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import Button from '../components/ui/Button.jsx'
 import { supabase } from '../lib/supabase.js'
 import { useAuth } from '../context/AuthContext.jsx'
+import { translateError } from '../lib/errors.js'
+import { formatMT, formatDateTime, normalize, shortId as toShortId } from '../lib/format.js'
+import usePageTitle from '../hooks/usePageTitle.js'
 
 const TABS = [
   { id: 'pendente', label: 'Pendentes', icon: Clock, color: 'amber' },
@@ -25,8 +29,10 @@ const STATUS_LABEL = {
 
 export default function PharmacyReservations() {
   const { isAdmin, pharmacyId } = useAuth()
+  usePageTitle('Reservas recebidas')
   const [reservations, setReservations] = useState([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const [activeTab, setActiveTab] = useState('pendente')
   const [query, setQuery] = useState('')
   const [processing, setProcessing] = useState(null)
@@ -34,18 +40,21 @@ export default function PharmacyReservations() {
   useEffect(() => {
     fetchReservations()
 
+    // Só as reservas desta farmácia (admin ouve todas)
+    const filter = !isAdmin && pharmacyId != null ? { filter: `pharmacy_id=eq.${pharmacyId}` } : {}
     const channel = supabase
-      .channel('staff-reservations')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'reservations' }, () => {
-        fetchReservations()
+      .channel(`staff-reservations-${pharmacyId ?? 'admin'}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'reservations', ...filter }, () => {
+        fetchReservations(true)
       })
       .subscribe()
 
     return () => { supabase.removeChannel(channel) }
   }, [pharmacyId, isAdmin])
 
-  async function fetchReservations() {
-    setLoading(true)
+  async function fetchReservations(silent = false) {
+    if (!silent) setLoading(true)
+    setError(null)
     let query = supabase
       .from('reservations')
       .select('*')
@@ -57,7 +66,7 @@ export default function PharmacyReservations() {
 
     const { data, error } = await query
     if (error) {
-      toast.error('Erro ao carregar reservas')
+      setError(translateError(error.message))
     } else {
       setReservations(data || [])
     }
@@ -74,15 +83,15 @@ export default function PharmacyReservations() {
   }, [reservations])
 
   const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase()
+    const q = normalize(query)
     return reservations
       .filter((r) => r.status === activeTab)
       .filter((r) => {
         if (!q) return true
         return (
-          r.medicine_name?.toLowerCase().includes(q) ||
-          r.id?.toLowerCase().includes(q) ||
-          r.pharmacy_name?.toLowerCase().includes(q)
+          normalize(r.medicine_name).includes(q) ||
+          r.id?.toLowerCase().startsWith(q) ||
+          normalize(r.pharmacy_name).includes(q)
         )
       })
   }, [reservations, activeTab, query])
@@ -95,9 +104,10 @@ export default function PharmacyReservations() {
       .eq('id', id)
     setProcessing(null)
     if (error) {
-      toast.error(error.message)
+      toast.error(translateError(error.message))
       return
     }
+    setReservations((prev) => prev.map((r) => (r.id === id ? { ...r, status } : r)))
     toast.success(successMsg)
   }
 
@@ -125,7 +135,7 @@ export default function PharmacyReservations() {
         <StatCard label="Pendentes" value={counts.pendente} icon={Clock} color="amber" highlight />
         <StatCard label="Aprovadas" value={counts.aprovada} icon={Package} color="blue" />
         <StatCard label="Levantadas" value={counts.concluida} icon={CheckCircle2} color="emerald" />
-        <StatCard label="Receita" value={`${totalRevenue} MT`} icon={CheckCircle2} color="brand" />
+        <StatCard label="Receita (levantadas)" value={formatMT(totalRevenue)} icon={CheckCircle2} color="brand" />
       </div>
 
       {/* Tabs + search */}
@@ -155,6 +165,8 @@ export default function PharmacyReservations() {
         <div className="flex items-center bg-slate-50 dark:bg-slate-800 rounded-xl px-3 py-2">
           <Search className="w-4 h-4 text-slate-400 shrink-0" />
           <input
+            type="search"
+            aria-label="Pesquisar reservas"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Pesquisar por código, medicamento..."
@@ -165,8 +177,13 @@ export default function PharmacyReservations() {
 
       {/* List */}
       {loading ? (
-        <div className="text-center py-12">
+        <div className="text-center py-12" role="status">
           <Loader2 className="w-6 h-6 animate-spin text-brand-600 mx-auto" />
+        </div>
+      ) : error ? (
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-10 text-center">
+          <p className="text-sm text-slate-600 dark:text-slate-300">{error}</p>
+          <Button className="mt-4" onClick={() => fetchReservations()}><RefreshCw className="w-4 h-4" /> Tentar novamente</Button>
         </div>
       ) : filtered.length === 0 ? (
         <div className="bg-white dark:bg-slate-900 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 p-12 text-center">
@@ -216,7 +233,7 @@ function StatCard({ label, value, icon: Icon, color = 'brand', highlight }) {
 function ReservationCard({ reservation, onApprove, onPickup, onCancel, processing }) {
   const r = reservation
   const status = STATUS_LABEL[r.status] || STATUS_LABEL.pendente
-  const shortId = r.id.slice(0, 8).toUpperCase()
+  const shortId = toShortId(r.id)
 
   return (
     <motion.div
@@ -242,12 +259,15 @@ function ReservationCard({ reservation, onApprove, onPickup, onCancel, processin
               <Hash className="w-3 h-3" /> {shortId}
             </span>
             <span className="flex items-center gap-1">
-              <Calendar className="w-3 h-3" /> {new Date(r.created_at).toLocaleString('pt-PT')}
+              <Calendar className="w-3 h-3" /> {formatDateTime(r.created_at)}
             </span>
           </div>
         </div>
         <div className="text-left sm:text-right shrink-0">
-          <div className="text-lg font-extrabold text-slate-900 dark:text-white">{r.price} MT</div>
+          <div className="text-lg font-extrabold text-slate-900 dark:text-white">{formatMT(r.price)}</div>
+          <div className="text-[11px] text-slate-500 dark:text-slate-400">
+            {r.payment_status === 'completed' ? `Pago via ${r.payment_method === 'mpesa' ? 'M-Pesa' : 'e-Mola'}` : r.payment_status === 'refunded' ? 'Reembolsado' : 'Por pagar'}
+          </div>
         </div>
       </div>
 
@@ -268,6 +288,9 @@ function ReservationCard({ reservation, onApprove, onPickup, onCancel, processin
             <Button onClick={onPickup} disabled={processing} className="flex-1 sm:flex-none">
               <Package className="w-3.5 h-3.5" /> Marcar como levantada
             </Button>
+            <Link to={`/reserva/${r.id}`} className="flex-1 sm:flex-none">
+              <Button variant="secondary" className="w-full"><Hash className="w-3.5 h-3.5" /> Validar QR</Button>
+            </Link>
             <Button variant="danger" onClick={onCancel} disabled={processing} className="flex-1 sm:flex-none">
               <XCircle className="w-3.5 h-3.5" /> Cancelar
             </Button>

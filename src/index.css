@@ -45,9 +45,20 @@ body {
 .scrollbar-thin::-webkit-scrollbar-thumb { background: #d1fae5; border-radius: 3px; }
 .dark .scrollbar-thin::-webkit-scrollbar-thumb { background: #059669; }
 
-/* Focus */
-input:focus, select:focus, textarea:focus, button:focus-visible {
-  outline: none;
+/* Focus: invisível ao rato, visível ao teclado */
+:focus:not(:focus-visible) { outline: none; }
+:focus-visible {
+  outline: 2px solid #059669;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+input:focus, select:focus, textarea:focus { outline: none; }
+
+/* Impressão do recibo */
+@media print {
+  body * { visibility: hidden; }
+  #receipt-print, #receipt-print * { visibility: visible; }
+  #receipt-print { position: absolute; left: 0; top: 0; width: 100%; }
 }
 
 /* Mobile tap */

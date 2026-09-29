@@ -1,11 +1,13 @@
 import { useState, useMemo, useEffect } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { MapPin, Star, Clock, Navigation, Crosshair, Loader2, MousePointer2 } from 'lucide-react'
+import { MapPin, Star, Clock, Crosshair, Loader2, MousePointer2, Pill, Store } from 'lucide-react'
 import PharmacyMap from '../components/PharmacyMap.jsx'
 import AddressSearch from '../components/AddressSearch.jsx'
 import { useData } from '../context/DataContext.jsx'
 import { useI18n } from '../context/I18nContext.jsx'
 import useUserLocation from '../hooks/useUserLocation.js'
+import usePageTitle from '../hooks/usePageTitle.js'
+import EmptyState from '../components/ui/EmptyState.jsx'
 
 function distanceKm(a, b) {
   const R = 6371
@@ -21,6 +23,7 @@ function distanceKm(a, b) {
 export default function MapPage() {
   const { pharmacies, medicines } = useData()
   const { t } = useI18n()
+  usePageTitle(t('map_title'))
   const { location: userLocation, loading: locLoading, hasPermission, denied, error: locError, requestLocation } = useUserLocation()
   const [searchParams, setSearchParams] = useSearchParams()
   const [selectedId, setSelectedId] = useState(null)
@@ -62,7 +65,7 @@ export default function MapPage() {
         if (sortBy === 'stock') return b.availableCount - a.availableCount
         return 0
       })
-  }, [pharmacies, userLocation, sortBy])
+  }, [pharmacies, activeLocation, sortBy])
 
   const handleSelect = (id) => {
     setSelectedId((prev) => (prev === id ? null : id))
@@ -118,13 +121,16 @@ export default function MapPage() {
           </div>
         </div>
         {manualMode && (
-          <p className="text-xs text-blue-500 dark:text-blue-400 font-semibold mt-2 ml-1">Clique no mapa para definir a sua posição</p>
+          <p className="text-xs text-blue-500 dark:text-blue-400 font-semibold mt-2 ml-1">Toque no mapa para definir a sua posição</p>
+        )}
+        {!manualMode && locError && !hasPermission && !isManuallySet && (
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 ml-1">{locError} A mostrar distâncias a partir da Baixa de Maputo.</p>
         )}
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Map */}
-        <div className="lg:col-span-2 h-[400px] sm:h-[600px]">
+        <div className="lg:col-span-2 min-w-0 h-[400px] sm:h-[600px]">
           <PharmacyMap
             userLocation={activeLocation}
             selectedPharmacyId={selectedId}
@@ -136,30 +142,34 @@ export default function MapPage() {
         </div>
 
         {/* Sidebar */}
-        <div>
+        <div className="min-w-0">
           {/* Sort controls */}
           <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-3 mb-4 flex gap-1 overflow-x-auto scrollbar-thin">
             {[
-              { id: 'distance', label: '📍 Distância' },
-              { id: 'rating', label: '⭐ Rating' },
-              { id: 'stock', label: '💊 Stock' },
+              { id: 'distance', label: 'Distância', Icon: MapPin },
+              { id: 'rating', label: 'Avaliação', Icon: Star },
+              { id: 'stock', label: 'Stock', Icon: Pill },
             ].map((s) => (
               <button
                 key={s.id}
                 onClick={() => setSortBy(s.id)}
-                className={`px-3 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition ${
+                aria-pressed={sortBy === s.id}
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition ${
                   sortBy === s.id
                     ? 'bg-brand-600 text-white shadow-md'
                     : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
                 }`}
               >
-                {s.label}
+                <s.Icon className="w-3.5 h-3.5" /> {s.label}
               </button>
             ))}
           </div>
 
           {/* Pharmacy list */}
           <div className="space-y-3 max-h-[520px] overflow-y-auto scrollbar-thin pr-1">
+            {sortedPharmacies.length === 0 && (
+              <EmptyState icon={Store} title="Sem farmácias" description="Ainda não há farmácias registadas." />
+            )}
             {sortedPharmacies.map((p) => {
               const isSelected = p.id === selectedId
               return (
@@ -176,9 +186,11 @@ export default function MapPage() {
                     <h3 className={`font-bold text-sm ${isSelected ? 'text-brand-700 dark:text-brand-400' : 'text-slate-900 dark:text-white group-hover:text-brand-700 dark:group-hover:text-brand-400'}`}>
                       {p.name}
                     </h3>
-                    <div className="flex items-center gap-0.5 text-xs font-semibold text-amber-600 shrink-0">
-                      <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" /> {p.rating}
-                    </div>
+                    {p.rating > 0 && (
+                      <div className="flex items-center gap-0.5 text-xs font-semibold text-amber-600 shrink-0">
+                        <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" /> {Number(p.rating).toFixed(1)}
+                      </div>
+                    )}
                   </div>
                   <div className="text-xs text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1">
                     <MapPin className="w-3 h-3 shrink-0" /> <span className="truncate">{p.address}</span>

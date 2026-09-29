@@ -6,11 +6,14 @@ import Button from '../components/ui/Button.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useReservations } from '../context/ReservationsContext.jsx'
 import { useI18n } from '../context/I18nContext.jsx'
+import { formatMonthYear } from '../lib/format.js'
+import usePageTitle from '../hooks/usePageTitle.js'
 
 export default function Profile() {
   const { user, updateProfile, updatePassword } = useAuth()
   const { reservations } = useReservations()
   const { t } = useI18n()
+  usePageTitle(t('nav_profile'))
   const [loading, setLoading] = useState(false)
   const [loadingPass, setLoadingPass] = useState(false)
   const [showPass, setShowPass] = useState(false)
@@ -23,6 +26,7 @@ export default function Profile() {
 
   const submitProfile = async (e) => {
     e.preventDefault()
+    if (loading) return
     setLoading(true)
     const res = await updateProfile(form)
     setLoading(false)
@@ -40,6 +44,7 @@ export default function Profile() {
       toast.error(t('profile_pass_min'))
       return
     }
+    if (loadingPass) return
     setLoadingPass(true)
     const res = await updatePassword(passForm.newPassword)
     setLoadingPass(false)
@@ -50,7 +55,7 @@ export default function Profile() {
   }
 
   const userName = user?.user_metadata?.name || user?.email?.split('@')[0] || ''
-  const memberSince = user?.created_at ? new Date(user.created_at).toLocaleDateString('pt-PT', { month: 'long', year: 'numeric' }) : '-'
+  const memberSince = formatMonthYear(user?.created_at)
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10">

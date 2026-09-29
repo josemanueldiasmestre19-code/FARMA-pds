@@ -1,17 +1,22 @@
 import { Wallet } from 'lucide-react'
 import { useAuth } from '../context/AuthContext.jsx'
 import WalletView from '../components/WalletView.jsx'
+import usePageTitle from '../hooks/usePageTitle.js'
+import { Link } from 'react-router-dom'
+import Button from '../components/ui/Button.jsx'
 
 export default function PharmacyWallet() {
   const { pharmacyId, isAdmin } = useAuth()
+  usePageTitle('Minha carteira')
 
   // Admin sem farmácia atribuída → mensagem
   if (isAdmin && pharmacyId == null) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-16 text-center">
         <Wallet className="w-12 h-12 text-slate-400 mx-auto mb-3" />
-        <h1 className="text-xl font-bold text-slate-900 dark:text-white">És admin</h1>
-        <p className="text-sm text-slate-500 mt-2">Vai a /admin para ver a carteira da plataforma.</p>
+        <h1 className="text-xl font-bold text-slate-900 dark:text-white">Conta de administrador</h1>
+        <p className="text-sm text-slate-500 mt-2">A carteira da plataforma está na área de finanças.</p>
+        <Link to="/admin/financas" className="inline-block mt-5"><Button>Ver finanças</Button></Link>
       </div>
     )
   }

@@ -1,7 +1,9 @@
 import { Pill } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { useI18n } from '../context/I18nContext.jsx'
 
 export default function LoadingScreen() {
+  const { t } = useI18n()
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950">
       <motion.div
@@ -14,7 +16,7 @@ export default function LoadingScreen() {
       <div className="font-extrabold text-slate-900 dark:text-white text-xl">
         Vona<span className="text-brand-600 dark:text-brand-400">med</span>
       </div>
-      <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">Loading...</p>
+      <p className="text-sm text-slate-500 dark:text-slate-400 mt-2" role="status">{t('loading_text')}</p>
     </div>
   )
 }

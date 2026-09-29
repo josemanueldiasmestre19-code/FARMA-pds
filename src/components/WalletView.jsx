@@ -4,12 +4,14 @@ import toast from 'react-hot-toast'
 import {
   Wallet, ArrowUpRight, ArrowDownRight, Receipt, Clock,
   TrendingUp, TrendingDown, Loader2, X, Send, ShieldCheck,
-  ShoppingBag, Package, Store, Users,
+  ShoppingBag, Package, Store, Users, RefreshCw, Smartphone,
 } from 'lucide-react'
 import Button from './ui/Button.jsx'
 import Modal from './ui/Modal.jsx'
 import { supabase } from '../lib/supabase.js'
-import { formatMT } from '../lib/commission.js'
+import { formatMT, formatShortDateTime, parseMzPhone, formatPhone } from '../lib/format.js'
+import { translateError } from '../lib/errors.js'
+import { SimulationBadge } from './ReserveModal.jsx'
 
 const TXN_CONFIG = {
   payment_in: { Icon: ArrowDownRight, color: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300', sign: '+' },
@@ -23,6 +25,7 @@ export default function WalletView({ kind = 'pharmacy', pharmacyId = null, stats
   const [wallet, setWallet] = useState(null)
   const [transactions, setTransactions] = useState([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const [withdrawOpen, setWithdrawOpen] = useState(false)
 
   useEffect(() => {
@@ -39,6 +42,7 @@ export default function WalletView({ kind = 'pharmacy', pharmacyId = null, stats
 
   async function fetch() {
     setLoading(true)
+    setError(null)
     let q = supabase.from('wallets').select('*')
     if (kind === 'platform') {
       q = q.eq('is_platform', true)
@@ -46,7 +50,8 @@ export default function WalletView({ kind = 'pharmacy', pharmacyId = null, stats
       q = q.eq('pharmacy_id', pharmacyId)
     }
 
-    const { data: walletData } = await q.maybeSingle()
+    const { data: walletData, error: wErr } = await q.maybeSingle()
+    if (wErr) { setError(translateError(wErr.message)); setLoading(false); return }
     setWallet(walletData)
 
     if (walletData) {
@@ -77,9 +82,12 @@ export default function WalletView({ kind = 'pharmacy', pharmacyId = null, stats
       }`}>
         <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full bg-white/10 blur-3xl" />
         <div className="relative">
-          <div className="flex items-center gap-2 text-xs uppercase tracking-widest opacity-80 mb-2">
-            <Wallet className="w-4 h-4" />
-            {kind === 'platform' ? 'Carteira Vonamed' : 'Carteira da farmácia'}
+          <div className="flex items-center justify-between gap-2 mb-2">
+            <div className="flex items-center gap-2 text-xs uppercase tracking-widest opacity-80">
+              <Wallet className="w-4 h-4" />
+              {kind === 'platform' ? 'Carteira Vonamed' : 'Carteira da farmácia'}
+            </div>
+            <SimulationBadge className="!bg-white/15 !border-white/30 !text-white" />
           </div>
           <div className="text-xs opacity-70 mb-1">Saldo disponível</div>
           <div className="text-4xl md:text-5xl font-extrabold tracking-tight">
@@ -128,7 +136,12 @@ export default function WalletView({ kind = 'pharmacy', pharmacyId = null, stats
         </div>
 
         {loading ? (
-          <div className="text-center py-12"><Loader2 className="w-5 h-5 animate-spin text-brand-600 mx-auto" /></div>
+          <div className="text-center py-12" role="status"><Loader2 className="w-5 h-5 animate-spin text-brand-600 mx-auto" /></div>
+        ) : error ? (
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-10 text-center">
+            <p className="text-sm text-slate-600 dark:text-slate-300">{error}</p>
+            <Button className="mt-4" onClick={fetch}><RefreshCw className="w-4 h-4" /> Tentar novamente</Button>
+          </div>
         ) : transactions.length === 0 ? (
           <div className="bg-white dark:bg-slate-900 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 p-10 text-center">
             <Receipt className="w-10 h-10 text-slate-400 mx-auto mb-3" />
@@ -158,9 +171,8 @@ export default function WalletView({ kind = 'pharmacy', pharmacyId = null, stats
 function TxnRow({ txn }) {
   const cfg = TXN_CONFIG[txn.type] || TXN_CONFIG.payment_in
   const { Icon, color, sign } = cfg
-  const date = new Date(txn.created_at).toLocaleString('pt-PT', {
-    day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit',
-  })
+  const date = formatShortDateTime(txn.created_at)
+  const methodLabel = { mpesa: 'M-Pesa', emola: 'e-Mola', commission: 'Comissão' }[txn.payment_method] || txn.payment_method
 
   return (
     <motion.div
@@ -177,8 +189,8 @@ function TxnRow({ txn }) {
         <div className="flex items-center gap-2 text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
           <Clock className="w-3 h-3" /> {date}
           {txn.payment_method && (
-            <span className="bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded uppercase text-[10px] font-semibold tracking-wider">
-              {txn.payment_method}
+            <span className="bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded text-[10px] font-semibold tracking-wide">
+              {methodLabel}
             </span>
           )}
         </div>
@@ -211,25 +223,27 @@ function StatBox({ icon: Icon, label, value, color = 'brand' }) {
 function WithdrawModal({ open, onClose, wallet, onSuccess }) {
   const [amount, setAmount] = useState('')
   const [method, setMethod] = useState('mpesa')
+  const [phone, setPhone] = useState('')
   const [processing, setProcessing] = useState(false)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
-    if (open) { setAmount(''); setProcessing(false) }
+    if (open) { setAmount(''); setPhone(''); setProcessing(false); setError(null) }
   }, [open])
+
+  const value = Number(amount)
+  const balance = wallet?.balance ?? 0
+  const amountError = amount === '' ? null : !value || value <= 0 ? 'Valor inválido' : value > balance ? 'Saldo insuficiente' : null
+  const digits = parseMzPhone(phone)
+  const phoneError = phone.replace(/\D/g, '').length >= 9 && !digits ? 'Número inválido (9 dígitos, começado por 8)' : null
+  const canSubmit = value > 0 && !amountError && digits && !processing
 
   const submit = async (e) => {
     e.preventDefault()
-    const value = Number(amount)
-    if (!value || value <= 0) {
-      toast.error('Valor inválido')
-      return
-    }
-    if (value > (wallet?.balance ?? 0)) {
-      toast.error('Saldo insuficiente')
-      return
-    }
+    if (!canSubmit) return
     setProcessing(true)
-    await new Promise((r) => setTimeout(r, 1200))
+    setError(null)
+    await new Promise((r) => setTimeout(r, 1500))
     const { error } = await supabase.rpc('withdraw_from_wallet', {
       p_wallet_id: wallet.id,
       p_amount: value,
@@ -237,17 +251,17 @@ function WithdrawModal({ open, onClose, wallet, onSuccess }) {
     })
     setProcessing(false)
     if (error) {
-      toast.error(error.message)
+      setError(translateError(error.message))
       return
     }
-    toast.success(`${formatMT(value)} enviado para ${method === 'mpesa' ? 'M-Pesa' : 'e-Mola'}!`)
+    toast.success(`${formatMT(value)} enviado para ${method === 'mpesa' ? 'M-Pesa' : 'e-Mola'} ${formatPhone(digits)}`)
     onSuccess?.()
     onClose()
   }
 
   return (
-    <Modal open={open} onClose={onClose} title="Levantar saldo">
-      <form onSubmit={submit} className="space-y-4">
+    <Modal open={open} onClose={onClose} title="Levantar saldo" closable={!processing}>
+      <form onSubmit={submit} className="space-y-4" noValidate>
         <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-3 text-center">
           <div className="text-xs text-slate-500 dark:text-slate-400">Saldo disponível</div>
           <div className="text-2xl font-extrabold text-slate-900 dark:text-white">
@@ -256,14 +270,16 @@ function WithdrawModal({ open, onClose, wallet, onSuccess }) {
         </div>
 
         <div>
-          <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Valor a levantar</label>
-          <div className="mt-1 flex items-center bg-slate-50 dark:bg-slate-800 rounded-xl px-4 focus-within:ring-2 focus-within:ring-brand-300 transition">
+          <label htmlFor="wd-amount" className="text-xs font-semibold text-slate-700 dark:text-slate-300">Valor a levantar</label>
+          <div className={`mt-1 flex items-center bg-slate-50 dark:bg-slate-800 rounded-xl px-4 border-2 focus-within:ring-2 focus-within:ring-brand-300 transition ${amountError ? 'border-rose-300' : 'border-transparent'}`}>
             <input
+              id="wd-amount"
               type="number"
-              required
+              inputMode="decimal"
               min="1"
               max={wallet?.balance ?? 0}
-              step="0.01"
+              step="1"
+              aria-invalid={!!amountError}
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               placeholder="0"
@@ -271,6 +287,7 @@ function WithdrawModal({ open, onClose, wallet, onSuccess }) {
             />
             <span className="text-sm font-bold text-slate-400">MT</span>
           </div>
+          {amountError && <p className="text-xs text-rose-600 dark:text-rose-400 mt-1 pl-1">{amountError}</p>}
           <div className="flex gap-1 mt-2">
             {[25, 50, 100].map((p) => {
               const val = Math.floor(((wallet?.balance ?? 0) * p) / 100)
@@ -321,11 +338,34 @@ function WithdrawModal({ open, onClose, wallet, onSuccess }) {
           </div>
         </div>
 
+        <div>
+          <label htmlFor="wd-phone" className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+            Número {method === 'mpesa' ? 'M-Pesa (84/85)' : 'e-Mola (86/87)'}
+          </label>
+          <div className={`mt-1 flex items-center bg-slate-50 dark:bg-slate-800 rounded-xl px-4 border-2 focus-within:ring-2 focus-within:ring-brand-300 transition ${phoneError ? 'border-rose-300' : 'border-transparent'}`}>
+            <Smartphone className="w-4 h-4 text-slate-400 shrink-0" />
+            <span className="ml-3 text-sm font-bold text-slate-500 dark:text-slate-400 shrink-0">+258</span>
+            <input
+              id="wd-phone"
+              type="tel"
+              inputMode="numeric"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value.replace(/[^\d\s]/g, '').slice(0, 11))}
+              placeholder="84 123 4567"
+              aria-invalid={!!phoneError}
+              className="flex-1 py-3 px-2 bg-transparent outline-none text-sm font-bold tracking-wider text-slate-900 dark:text-slate-100 min-w-0"
+            />
+          </div>
+          {phoneError && <p className="text-xs text-rose-600 dark:text-rose-400 mt-1 pl-1">{phoneError}</p>}
+        </div>
+
+        {error && <p role="alert" className="text-sm text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-900/20 rounded-xl px-3 py-2">{error}</p>}
+
         <div className="flex gap-2 pt-2">
           <Button type="button" variant="secondary" className="flex-1" onClick={onClose} disabled={processing}>
             <X className="w-4 h-4" /> Cancelar
           </Button>
-          <Button type="submit" className="flex-1" disabled={processing}>
+          <Button type="submit" className="flex-1" disabled={!canSubmit}>
             {processing ? (
               <><Loader2 className="w-4 h-4 animate-spin" /> A processar...</>
             ) : (
